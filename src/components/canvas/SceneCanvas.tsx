@@ -57,10 +57,6 @@ export default function SceneCanvas() {
       {/* Drei multi-scene port — renders content from <View> regions (Phase 5+). */}
       <View.Port />
 
-      {/* Placeholder ambient light — keeps the scene non-black during Phase 4 dev. */}
-      {/* Phase 5 replaces this with the full lighting rig. */}
-      <ambientLight intensity={0.5} />
-
       {/* Fires one invalidate() on mount for the initial demand-mode frame. */}
       <CanvasInit />
     </Canvas>

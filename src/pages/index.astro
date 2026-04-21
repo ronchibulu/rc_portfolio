@@ -28,6 +28,7 @@ import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
 import HeroTyping from '@/components/HeroTyping';
 import SceneCanvas from '@/components/canvas/SceneCanvas';
+import SceneView from '@/components/canvas/SceneView';
 
 const hero = {
   name: "Hi, I'm Ronald.",
@@ -57,6 +58,16 @@ const hero = {
   <main>
     {/* =============== HERO =============== */}
     <section id="hero" class="relative z-10 flex min-h-dvh scroll-mt-16 items-center">
+      {/*
+        * Phase 5 — View tracking region.
+        * absolute inset-0: covers the hero section exactly (section is relative z-10).
+        * pointer-events-none: mouse/touch events pass through to hero text and scroll cue.
+        * SceneView reads this div's bounds via document.getElementById('hero-canvas-view').
+        * client:only="react" — hard rule (AGENTS.md): R3F islands never SSR.
+        */}
+      <div id="hero-canvas-view" class="absolute inset-0 pointer-events-none" />
+      <SceneView client:only="react" trackId="hero-canvas-view" />
+
       <div
         class="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 md:py-24 lg:px-12 lg:py-32"
       >

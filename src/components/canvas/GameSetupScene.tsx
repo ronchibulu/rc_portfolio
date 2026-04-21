@@ -1,7 +1,7 @@
 import { $sceneReady } from '@/stores/sceneStore';
 import { useGLTF } from '@react-three/drei/core/Gltf.js';
 import { PerspectiveCamera } from '@react-three/drei/core/PerspectiveCamera.js';
-import { useProgress } from '@react-three/drei/misc/useProgress.js';
+import { useProgress } from '@react-three/drei/core/Progress.js';
 /**
  * Phase 5 — R3F scene component.
  *
