@@ -1,0 +1,37 @@
+---
+/*
+ * Phase 2 — Footer.astro
+ * Per 02-UI-SPEC §Footer Contract.
+ *
+ * LinkedIn + email are LIVE values sourced from PROJECT.md §Context.
+ * NO TODO needed; Phase 11 deploy pass does NOT touch these.
+ */
+---
+
+<footer class="w-full border-t border-zinc-800 bg-zinc-950 px-4 py-8 sm:px-6 lg:px-12">
+  <div
+    class="mx-auto flex max-w-6xl flex-col gap-3 md:flex-row md:items-center md:justify-between"
+  >
+    {/* Links cluster — stacks column at sm:, single row at md:+ */}
+    <div class="flex flex-col gap-3 md:flex-row md:items-center md:gap-0">
+      <a
+        href="https://www.linkedin.com/in/ronald-cheng-833038257"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex min-h-11 items-center py-2 text-xs text-zinc-500 transition-colors hover:text-purple-400 focus-visible:rounded-sm focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 sm:text-sm"
+      >
+        LinkedIn
+      </a>
+      <span class="hidden text-zinc-700 md:mx-2 md:inline" aria-hidden="true">·</span>
+      <a
+        href="mailto:ronald1122323@gmail.com?subject=Portfolio"
+        class="inline-flex min-h-11 items-center py-2 text-xs text-zinc-500 transition-colors hover:text-purple-400 focus-visible:rounded-sm focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 sm:text-sm"
+      >
+        ronald1122323@gmail.com
+      </a>
+    </div>
+
+    {/* Copyright — right-aligned at md:+, below links at sm: */}
+    <p class="text-xs text-zinc-500">© 2026 Ronald Cheng</p>
+  </div>
+</footer>
