@@ -46,12 +46,34 @@ const hero = {
       <div
         class="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 md:py-24 lg:px-12 lg:py-32"
       >
+        {/*
+          * client:only="react" — no SSR output for this island, zero hydration mismatch.
+          * HERO-001 (no-JS visibility) is satisfied by the static <noscript> below.
+          * AGENTS.md hard rule: complex React islands use client:only="react".
+          */}
         <HeroTyping
-          client:load
+          client:only="react"
           name={hero.name}
           role={hero.role}
           tagline={hero.tagline}
         />
+        {/* Static fallback for no-JS / pre-hydration (HERO-001) */}
+        <noscript>
+          <div class="flex flex-col gap-4 md:gap-6">
+            <div class="font-pixel text-3xl leading-tight text-zinc-100 sm:text-4xl md:text-5xl lg:text-6xl">
+              {hero.name}
+            </div>
+            <p class="font-pixel text-base leading-snug text-purple-400 sm:text-lg md:text-xl lg:text-2xl">
+              {hero.role}
+            </p>
+            <p class="text-sm leading-relaxed sm:text-base md:text-lg">
+              <span class="font-pixel text-purple-400">&gt;_ </span>
+              <span class="font-sans text-zinc-500">Shipping </span>
+              <span class="font-sans text-yellow-400">pixel-sharp</span>
+              <span class="font-sans text-zinc-500"> frontends with purpose.</span>
+            </p>
+          </div>
+        </noscript>
       </div>
 
       {/* Scroll cue — anchored bottom-center, bobs via .animate-scrollbob (Plan 01 globals.css). */}

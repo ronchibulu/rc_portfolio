@@ -1,6 +1,6 @@
 /*
  * Phase 2 — HeroTyping.tsx
- * React 19 island mounted via client:load in src/pages/index.astro (Plan 03).
+ * React 19 island mounted via client:only="react" in src/pages/index.astro.
  *
  * Contract: 02-UI-SPEC §Typing Animation Contract.
  *  - 3 lines in sequence: name -> role -> tagline (with ">_ " prefix + "pixel-sharp" highlight)
@@ -8,6 +8,7 @@
  *  - Hold: 400ms between lines
  *  - Caret: purple-400 "█" — solid while typing, blinks (.animate-caret) at rest on line 3
  *  - Reduced-motion: render all three lines immediately, no caret, no holds
+ *  - No SSR output (client:only) — HERO-001 served by <noscript> in index.astro
  *
  * The ".animate-caret" utility class and its @keyframes caret-blink are defined in
  * src/styles/globals.css (Plan 01 Task 1). This component only references the class name.
@@ -101,12 +102,10 @@ export default function HeroTyping({ name, role, tagline }: HeroTypingProps) {
   );
 
   // Visible-char counters per line.
-  // SSR (typeof window === "undefined") OR reduced-motion -> render final text immediately.
-  // This satisfies HERO-001 (no-JS users see the full hero) and keeps the first client
-  // render identical to SSR (no hydration flash). On hydrate, the useEffect below resets
-  // counters back to [0,0,0] and the animation starts from an empty state.
+  // client:only="react" — no SSR output, so no hydration mismatch risk.
+  // reduced-motion -> render all final text immediately (HERO-004).
   const [shown, setShown] = useState<[number, number, number]>(() => {
-    if (typeof window === 'undefined' || prefersReduced) {
+    if (prefersReduced) {
       return [name.length, role.length, TAGLINE_PREFIX.length + tagline.length];
     }
     return [0, 0, 0];
@@ -118,11 +117,6 @@ export default function HeroTyping({ name, role, tagline }: HeroTypingProps) {
 
   useEffect(() => {
     if (reduced) return; // reduced-motion: everything is already in "done" state.
-
-    // Reset counters from the SSR-final snapshot back to empty so the animation
-    // starts from zero on hydrate. (HERO-001 seam — SSR renders final text, but
-    // once JS runs we play the typewriter from the top.)
-    setShown([0, 0, 0]);
 
     let cancelled = false;
     let timer: ReturnType<typeof setTimeout> | null = null;
@@ -229,7 +223,6 @@ export default function HeroTyping({ name, role, tagline }: HeroTypingProps) {
 
       <div
         aria-hidden="true"
-        suppressHydrationWarning
         className="font-pixel text-3xl leading-tight text-zinc-100 sm:text-4xl md:text-5xl lg:text-6xl"
       >
         {visibleName}
@@ -238,18 +231,13 @@ export default function HeroTyping({ name, role, tagline }: HeroTypingProps) {
 
       <p
         aria-hidden="true"
-        suppressHydrationWarning
         className="font-pixel text-base leading-snug text-purple-400 sm:text-lg md:text-xl lg:text-2xl"
       >
         {visibleRole}
         {currentLine === 1 ? caretNode(false) : null}
       </p>
 
-      <p
-        aria-hidden="true"
-        suppressHydrationWarning
-        className="text-sm leading-relaxed sm:text-base md:text-lg"
-      >
+      <p aria-hidden="true" className="text-sm leading-relaxed sm:text-base md:text-lg">
         {renderTagline(tagline, shown2)}
         {currentLine === 2 ? caretNode(false) : null}
         {isDone ? caretNode(true) : null}
