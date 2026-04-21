@@ -149,3 +149,76 @@ html,
 body {
   min-height: 100dvh;
 }
+
+/*
+ * ===== Phase 2 additions =====
+ * Smooth-scroll, reduced-motion override, and the two hand-rolled keyframe
+ * utilities consumed by the hero (caret blink + scroll-cue bob).
+ */
+
+/*
+ * Smooth-scroll on the root so clicking a nav anchor (#projects, #about, #contact)
+ * animates the viewport instead of jumping. Paired with scroll-padding-top = 4rem
+ * (matches nav h-16) so anchor targets land below the sticky header, not under it.
+ * Per 02-UI-SPEC §Nav "Smooth-scroll behavior".
+ */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 4rem;
+}
+
+/*
+ * Reduced-motion: disable CSS smooth-scroll. Browsers do NOT auto-respect
+ * prefers-reduced-motion for scroll-behavior, so we flip it manually.
+ * Same @media block disables the scroll-cue bob below.
+ * Per 02-UI-SPEC §Interaction States "prefers-reduced-motion blanket rules".
+ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/*
+ * Scroll-cue bob — 2s ease-in-out infinite; 0→4px→0 translateY.
+ * Exposed as .animate-scrollbob utility and wrapped in a no-preference
+ * media query so it fully stops under reduced motion (not just paused).
+ * Per 02-UI-SPEC §Hero "Scroll cue visual".
+ */
+@keyframes scrollbob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(4px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .animate-scrollbob {
+    animation: scrollbob 2s ease-in-out infinite;
+  }
+}
+
+/*
+ * Typing caret blink — 1.0s infinite opacity 1→0→1.
+ * Consumed by src/components/HeroTyping.tsx (Plan 02) on the resting caret.
+ * Per 02-UI-SPEC §Typing Animation "Caret".
+ * Note: reduced-motion is handled INSIDE HeroTyping.tsx (the caret is not
+ * rendered at all under reduced motion), so we do NOT gate this keyframe
+ * with a media query — the JS gate is the source of truth.
+ */
+@keyframes caret-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.animate-caret {
+  animation: caret-blink 1s steps(1, end) infinite;
+}
