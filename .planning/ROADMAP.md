@@ -53,10 +53,12 @@ Plans:
   2. Typing animation plays once per load and is disabled under `prefers-reduced-motion` with final text visible.
   3. Nav anchors Projects / About / Contact are present and scroll to their targets.
   4. Footer links open LinkedIn profile and a mail client prefilled with the user's email.
-**Plans**: TBD
+**Plans**: 3 complete
 
 Plans:
-- [ ] 02-01: TBD
+- [ ] 02-01: Layout primitives — Header.astro, Footer.astro, globals.css (smooth-scroll, keyframes) (FND-006, FND-007, FND-008, FND-009, HERO-003, HERO-004)
+- [ ] 02-02: HeroTyping.tsx React island (typing FSM, caret blink, reduced-motion path) (HERO-001, HERO-002, HERO-004, FND-009)
+- [ ] 02-03: Page composition — replace index.astro + human visual smoke (FND-006, FND-007, FND-008, HERO-001..004)
 
 ### Phase 3: Asset Optimization Pipeline
 **Goal**: Produce a production-ready gaming_setup_v12.glb under 2 MB with self-hosted Draco decoder binaries.
@@ -203,7 +205,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Scaffold & Design System | 3/3 | ✓ Complete | 2026-04-22 |
-| 2. Layout, Nav, Footer, Hero | 0/0 | Not started | - |
+| 2. Layout, Nav, Footer, Hero | 0/3 | Planned | - |
 | 3. Asset Optimization Pipeline | 0/0 | Not started | - |
 | 4. R3F Canvas Infrastructure | 0/0 | Not started | - |
 | 5. 3D Scene + Fixed Camera | 0/0 | Not started | - |
