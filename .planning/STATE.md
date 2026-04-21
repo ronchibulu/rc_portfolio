@@ -2,23 +2,23 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 05
-status: phase_complete
-last_updated: "2026-04-22T03:38:00.000Z"
+current_phase: 05-3d-scene-fixed-camera
+status: in_progress
+last_updated: "2026-04-21T22:30:30.401Z"
 progress:
   total_phases: 11
   completed_phases: 4
-  total_plans: 9
-  completed_plans: 9
-  percent: 36
+  total_plans: 11
+  completed_plans: 10
+  percent: 45
 ---
 
 # Project State
 
 **Last updated:** 2026-04-22
 **Current milestone:** v1 — Ship portfolio to Vercel
-**Current phase:** 4 — R3F Canvas Infrastructure ✓ **COMPLETE**
-**Next up:** Phase 5 — 3D Scene + Fixed Camera
+**Current phase:** 5 — 3D Scene + Fixed Camera (in progress — 1/2 plans done)
+**Next up:** Phase 5 Plan 02 — integrate SceneView into index.astro
 
 ---
 
@@ -34,7 +34,7 @@ Deliver dark pixel/8-bit retro portfolio with scroll-driven 3D camera fly-in, OS
 2. Layout, Nav, Footer, Hero — ✓ **complete (2026-04-22)** — 3/3 plans done, UI-SPEC approved, code review clean, UI review 11/12
 3. Asset Optimization Pipeline — ✓ **complete (2026-04-22)** — 1 plan, 51MB→1.89MB (Draco+dedup+prune+weld), Draco decoder installed
 4. R3F Canvas Infrastructure — ✓ **complete (2026-04-22)** — 2/2 plans done, canvas 1899×1202, z-index contract verified, zero console errors, Vite 504 fixed via sub-path imports
-5. 3D Scene + Fixed Camera — not started
+5. 3D Scene + Fixed Camera — 🔄 **in progress (1/2 plans)** — Plan 01: GameSetupScene.tsx + SceneView.tsx ✓
 6. Scroll Narrative + Camera Fly-In — not started
 7. OS Screen Shell — not started
 8. Project Dialogs + Image Slider — not started
@@ -84,6 +84,16 @@ Deliver dark pixel/8-bit retro portfolio with scroll-driven 3D camera fly-in, OS
 
 ---
 
+- 2026-04-22 — Phase 5 Plan 01 executed (05-01):
+  - 05-01: GameSetupScene.tsx (93 lines) — CAMERA_POSITION/TARGET/FOV/NEAR/FAR constants, useGLTF.preload, 3-light rig, SceneLoader (exported), useEffect with camera.lookAt + invalidate() + $sceneReady.set(true)
+  - 05-01: SceneView.tsx (45 lines) — Drei View wrapper, document.getElementById(trackId) ref, Suspense + SceneLoader fallback
+  - Biome lint: PASS (both files, 0 errors after auto-fix import ordering)
+  - bunx astro build: PASS (exit 0, 339 modules, no TypeScript errors)
+  - Commits: a4123a8 (GameSetupScene), 4f5fb77 (SceneView)
+  - SCENE-004 + SCENE-005 + PERF-002 covered
+
+---
+
 ## Next Up
 
-Phase 5 — 3D Scene + Fixed Camera (load gaming_setup_v12.glb, match reference camera angle, Suspense UX).
+Phase 5 Plan 02 — integrate SceneView into index.astro, wire SceneCanvas with full lighting rig, visual checkpoint.
