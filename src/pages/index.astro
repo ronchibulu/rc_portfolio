@@ -1,107 +1,122 @@
 ---
-// Phase 1 smoke-test page (D-26).
-// Replaces the Plan 02 placeholder. Plan 03 Task 2 output.
-// Phase 2 replaces this with the real hero section.
+/*
+ * Phase 2 — Landing page composition.
+ * Replaces the Phase 1 smoke test (01-03 output).
+ *
+ * Layout:
+ *   BaseLayout > Header (sticky, h-16) > <main> (hero + 3 placeholder sections) > Footer.
+ *
+ * Hero (HERO-001/002/003/004):
+ *   - <HeroTyping> React island mounted with client:load. After the Plan 03 Task 1
+ *     patch to HeroTyping.tsx, SSR renders the final-state strings so no-JS users
+ *     see the complete hero copy immediately, and hydration resets counters to [0,0,0]
+ *     before playing the typewriter.
+ *   - <noscript> fallback is ALSO rendered as a belt-and-braces safety net for the
+ *     edge case where JS fails to execute after HTML parse (e.g. blocked by a CSP
+ *     extension). Under normal conditions (JS on, or JS off without noscript DOM
+ *     replacement), the SSR'd island markup itself satisfies HERO-001.
+ *   - Scroll cue: <a href="#projects"> wrapping the ▼ glyph, bobbing via .animate-scrollbob
+ *     (defined in Plan 01 globals.css, gated by prefers-reduced-motion: no-preference).
+ *
+ * Placeholders: three <section>s with one-line copy per 02-UI-SPEC §Placeholder stubs.
+ *   Each is min-h-dvh + scroll-mt-16 so smooth-scroll lands below the sticky nav.
+ *
+ * Canvas compatibility (02-UI-SPEC §Color): hero section has NO background image /
+ *   gradient / overlay — only the body's zinc-950 shows through. The Phase 4-6 3D
+ *   canvas will slot BEHIND this markup.
+ *
+ * No 3D, no GSAP, no Motion here — Phase 3+ concerns.
+ */
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import { Button } from '@/components/ui/button';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import HeroTyping from '@/components/HeroTyping';
+
+const hero = {
+  name: "Hi, I'm Ronald.",
+  role: 'Senior Full-Stack Developer',
+  tagline: 'Shipping pixel-sharp frontends with purpose.',
+};
 ---
 
-<BaseLayout title="Ronald Cheng — Portfolio (Phase 1 smoke test)">
-  <main class="mx-auto flex min-h-dvh max-w-5xl flex-col gap-12 p-6 md:p-12">
-    {/* 1. Pixel-font heading — proves fontsource + font-pixel token wired */}
-    <header class="space-y-4">
-      <h1 class="font-pixel text-2xl leading-relaxed text-purple-400 md:text-4xl lg:text-5xl">
-        Phase 1 Design System
-      </h1>
-      <p class="text-sm text-zinc-500 md:text-base">
-        Astro v5 static + React 19 islands + Tailwind v4 CSS-first theme + Shadcn primitives.
-      </p>
-    </header>
+<BaseLayout title="Ronald Cheng — Senior Full-Stack Developer">
+  <Header />
 
-    {/* 2. Shadcn Button smoke (D-26, FND-003) — default + secondary variants.
-         Rendered as React island via client:load so interactivity (focus/hover) is active. */}
-    <section class="space-y-4">
-      <h2 class="font-pixel text-lg text-zinc-100">Shadcn Button</h2>
-      <div class="flex flex-wrap gap-4">
-        <Button client:load>Default variant</Button>
-        <Button client:load variant="secondary">Secondary variant</Button>
+  <main>
+    {/* =============== HERO =============== */}
+    <section id="hero" class="relative flex min-h-dvh scroll-mt-16 items-center">
+      <div
+        class="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 md:py-24 lg:px-12 lg:py-32"
+      >
+        <HeroTyping
+          client:load
+          name={hero.name}
+          role={hero.role}
+          tagline={hero.tagline}
+        />
+
+        <noscript>
+          <div class="flex flex-col gap-4 md:gap-6">
+            <h1
+              class="font-pixel text-3xl leading-tight text-zinc-100 sm:text-4xl md:text-5xl lg:text-6xl"
+            >
+              {hero.name}
+            </h1>
+            <p
+              class="font-pixel text-base leading-snug text-purple-400 sm:text-lg md:text-xl lg:text-2xl"
+            >
+              {hero.role}
+            </p>
+            <p class="text-sm leading-relaxed sm:text-base md:text-lg">
+              <span class="font-pixel text-purple-400">&gt;_ </span>
+              <span class="font-sans text-zinc-500">Shipping </span>
+              <span class="font-sans text-yellow-400">pixel-sharp</span>
+              <span class="font-sans text-zinc-500"> frontends with purpose.</span>
+            </p>
+          </div>
+        </noscript>
       </div>
-      <p class="text-xs text-zinc-500">
-        Verify: rounded corners, padding, and focus ring use Tailwind v4 defaults only.
+
+      {/* Scroll cue — anchored bottom-center, bobs via .animate-scrollbob (Plan 01 globals.css). */}
+      <a
+        href="#projects"
+        aria-label="Scroll to projects"
+        class="absolute bottom-4 left-1/2 inline-flex -translate-x-1/2 animate-scrollbob items-center justify-center rounded-sm p-1 font-pixel text-lg text-yellow-400 transition-colors hover:text-yellow-400 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 md:bottom-6 lg:bottom-8"
+      >
+        ▼
+      </a>
+    </section>
+
+    {/* =============== PROJECTS PLACEHOLDER — arriving in Phase 7 =============== */}
+    <section
+      id="projects"
+      class="flex min-h-dvh scroll-mt-16 items-center justify-center px-4 sm:px-6 lg:px-12"
+    >
+      <p class="text-center font-pixel text-sm text-zinc-500">
+        Projects — arriving in Phase 7.
       </p>
     </section>
 
-    {/* 3. Palette swatches (D-26, FND-005) — every token from CLAUDE.md color palette. */}
-    <section class="space-y-4">
-      <h2 class="font-pixel text-lg text-zinc-100">Palette</h2>
-      <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
-        <div class="flex flex-col gap-2 rounded-sm border border-zinc-700 p-3">
-          <div class="h-12 w-full bg-zinc-950"></div>
-          <span class="font-pixel text-[10px] text-zinc-400">bg-zinc-950</span>
-        </div>
-        <div class="flex flex-col gap-2 rounded-sm border border-zinc-700 p-3">
-          <div class="h-12 w-full bg-zinc-900"></div>
-          <span class="font-pixel text-[10px] text-zinc-400">bg-zinc-900</span>
-        </div>
-        <div class="flex flex-col gap-2 rounded-sm border border-zinc-700 p-3">
-          <div class="h-12 w-full bg-zinc-800"></div>
-          <span class="font-pixel text-[10px] text-zinc-400">bg-zinc-800</span>
-        </div>
-        <div class="flex flex-col gap-2 rounded-sm border border-zinc-700 p-3">
-          <div class="h-12 w-full bg-zinc-100"></div>
-          <span class="font-pixel text-[10px] text-zinc-400">bg-zinc-100</span>
-        </div>
-        <div class="flex flex-col gap-2 rounded-sm border border-zinc-700 p-3">
-          <div class="h-12 w-full bg-purple-400"></div>
-          <span class="font-pixel text-[10px] text-zinc-400">bg-purple-400</span>
-        </div>
-        <div class="flex flex-col gap-2 rounded-sm border border-zinc-700 p-3">
-          <div class="h-12 w-full bg-violet-400"></div>
-          <span class="font-pixel text-[10px] text-zinc-400">bg-violet-400</span>
-        </div>
-        <div class="flex flex-col gap-2 rounded-sm border border-zinc-700 p-3">
-          <div class="h-12 w-full bg-yellow-400"></div>
-          <span class="font-pixel text-[10px] text-zinc-400">bg-yellow-400</span>
-        </div>
-        <div class="flex flex-col gap-2 rounded-sm border border-zinc-700 p-3">
-          <div class="h-12 w-full bg-zinc-700"></div>
-          <span class="font-pixel text-[10px] text-zinc-400">bg-zinc-700</span>
-        </div>
-        <div class="flex flex-col gap-2 rounded-sm border border-zinc-700 p-3">
-          <div class="h-12 w-full bg-zinc-500"></div>
-          <span class="font-pixel text-[10px] text-zinc-400">bg-zinc-500</span>
-        </div>
-      </div>
-      <p class="text-xs text-zinc-500">
-        Nine palette tokens from CLAUDE.md — if any swatch is blank, Tailwind is not wired.
+    {/* =============== ABOUT PLACEHOLDER — arriving in Phase 9 =============== */}
+    <section
+      id="about"
+      class="flex min-h-dvh scroll-mt-16 items-center justify-center px-4 sm:px-6 lg:px-12"
+    >
+      <p class="text-center font-pixel text-sm text-zinc-500">
+        About Me — arriving in Phase 9.
       </p>
     </section>
 
-    {/* 4. Breakpoint indicator (D-26, FND-008) — proves sm=375 / md=768 / lg=1024 / 2xl=1920. */}
-    <section class="space-y-4">
-      <h2 class="font-pixel text-lg text-zinc-100">Breakpoint</h2>
-      <div class="flex items-center gap-3 rounded-sm border border-zinc-700 bg-zinc-900 p-4">
-        <span class="font-pixel text-sm text-yellow-400">
-          <span class="block sm:hidden">xs (&lt; 375)</span>
-          <span class="hidden sm:block md:hidden">sm — 375+</span>
-          <span class="hidden md:block lg:hidden">md — 768+</span>
-          <span class="hidden lg:block 2xl:hidden">lg — 1024+</span>
-          <span class="hidden 2xl:block">2xl — 1920+</span>
-        </span>
-      </div>
-      <p class="text-xs text-zinc-500">
-        Resize the window; the label updates at 375 / 768 / 1024 / 1920 as viewport crosses each.
+    {/* =============== CONTACT PLACEHOLDER — footer is contact =============== */}
+    <section
+      id="contact"
+      class="flex min-h-dvh scroll-mt-16 items-center justify-center px-4 sm:px-6 lg:px-12"
+    >
+      <p class="text-center font-pixel text-sm text-zinc-500">
+        Contact — see footer below.
       </p>
-    </section>
-
-    {/* 5. CRT accent token proof — the semantic alias defined in @theme */}
-    <section class="space-y-4">
-      <h2 class="font-pixel text-lg text-zinc-100">CRT accent token</h2>
-      <div class="rounded-sm border border-zinc-700 bg-zinc-900 p-4">
-        <p class="font-pixel text-sm text-(--color-crt-accent)">
-          This text uses --color-crt-accent (aliased to purple-400 in @theme).
-        </p>
-      </div>
     </section>
   </main>
+
+  <Footer />
 </BaseLayout>
