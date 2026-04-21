@@ -18,5 +18,36 @@ export default defineConfig({
   integrations: [react()],
   vite: {
     plugins: [tailwindcss()],
+    // Pre-bundle heavy deps so Vite dev server doesn't hit 504 "Outdated Optimize Dep"
+    // errors on first load of R3F/three.js islands. These are large packages that
+    // benefit from explicit inclusion in Vite's dep optimizer.
+    optimizeDeps: {
+      // Pre-bundle R3F/three deps. We use direct sub-path imports for drei
+      // (./web/View.js, ./core/Gltf.js) instead of the barrel to avoid the
+      // 504 "Outdated Optimize Dep" caused by Vite timing out on bundling
+      // drei's 139-export barrel.
+      include: [
+        'three',
+        '@react-three/fiber',
+        '@react-three/drei/web/View.js',
+        '@react-three/drei/core/Gltf.js',
+        'use-sync-external-store',
+        'use-sync-external-store/shim',
+        'use-sync-external-store/shim/with-selector',
+        'react',
+        'react-dom',
+        'react/jsx-runtime',
+        'react/jsx-dev-runtime',
+      ],
+      force: true,
+    },
+    server: {
+      warmup: {
+        clientFiles: [
+          './src/components/canvas/SceneCanvas.tsx',
+          './src/components/HeroTyping.tsx',
+        ],
+      },
+    },
   },
 });

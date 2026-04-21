@@ -1,3 +1,4 @@
+import { useGLTF } from '@react-three/drei/core/Gltf.js';
 /**
  * Phase 4 — R3F Canvas island.
  *
@@ -11,7 +12,10 @@
  *   - gl={{ alpha: true }} keeps the canvas transparent — body bg-zinc-950 shows through.
  *   - pointer-events-none on the wrapper (set in index.astro) — HTML layers remain clickable.
  */
-import { View, useGLTF } from '@react-three/drei';
+// Use direct sub-path imports to avoid pre-bundling the entire @react-three/drei
+// barrel (139 re-exports). The barrel causes Vite's dep optimizer to time out,
+// leaving @react-three_drei.js as a dangling .map-only entry that 504s on load.
+import { View } from '@react-three/drei/web/View.js';
 import { Canvas, useThree } from '@react-three/fiber';
 import { useEffect } from 'react';
 
