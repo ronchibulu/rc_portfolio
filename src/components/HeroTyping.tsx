@@ -206,17 +206,23 @@ export default function HeroTyping({ name, role, tagline }: HeroTypingProps) {
 
   return (
     <div className="flex flex-col gap-4 md:gap-6">
-      <h1 className="font-pixel text-3xl leading-tight text-zinc-100 sm:text-4xl md:text-5xl lg:text-6xl">
+      <h1
+        suppressHydrationWarning
+        className="font-pixel text-3xl leading-tight text-zinc-100 sm:text-4xl md:text-5xl lg:text-6xl"
+      >
         {visibleName}
         {currentLine === 0 ? caretNode(false) : null}
       </h1>
 
-      <p className="font-pixel text-base leading-snug text-purple-400 sm:text-lg md:text-xl lg:text-2xl">
+      <p
+        suppressHydrationWarning
+        className="font-pixel text-base leading-snug text-purple-400 sm:text-lg md:text-xl lg:text-2xl"
+      >
         {visibleRole}
         {currentLine === 1 ? caretNode(false) : null}
       </p>
 
-      <p className="text-sm leading-relaxed sm:text-base md:text-lg">
+      <p suppressHydrationWarning className="text-sm leading-relaxed sm:text-base md:text-lg">
         {renderTagline(tagline, shown2)}
         {currentLine === 2 ? caretNode(false) : null}
         {isDone ? caretNode(true) : null}
