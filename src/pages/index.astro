@@ -10,11 +10,9 @@
  *   - <HeroTyping> React island mounted with client:load. After the Plan 03 Task 1
  *     patch to HeroTyping.tsx, SSR renders the final-state strings so no-JS users
  *     see the complete hero copy immediately, and hydration resets counters to [0,0,0]
- *     before playing the typewriter.
- *   - <noscript> fallback is ALSO rendered as a belt-and-braces safety net for the
- *     edge case where JS fails to execute after HTML parse (e.g. blocked by a CSP
- *     extension). Under normal conditions (JS on, or JS off without noscript DOM
- *     replacement), the SSR'd island markup itself satisfies HERO-001.
+ *     before playing the typewriter. The SSR'd island markup is the SINGLE source of
+ *     truth for HERO-001 — no <noscript> fallback is needed (it would render a duplicate
+ *     hero block for JS-disabled users).
  *   - Scroll cue: <a href="#projects"> wrapping the ▼ glyph, bobbing via .animate-scrollbob
  *     (defined in Plan 01 globals.css, gated by prefers-reduced-motion: no-preference).
  *
@@ -54,27 +52,6 @@ const hero = {
           role={hero.role}
           tagline={hero.tagline}
         />
-
-        <noscript>
-          <div class="flex flex-col gap-4 md:gap-6">
-            <h1
-              class="font-pixel text-3xl leading-tight text-zinc-100 sm:text-4xl md:text-5xl lg:text-6xl"
-            >
-              {hero.name}
-            </h1>
-            <p
-              class="font-pixel text-base leading-snug text-purple-400 sm:text-lg md:text-xl lg:text-2xl"
-            >
-              {hero.role}
-            </p>
-            <p class="text-sm leading-relaxed sm:text-base md:text-lg">
-              <span class="font-pixel text-purple-400">&gt;_ </span>
-              <span class="font-sans text-zinc-500">Shipping </span>
-              <span class="font-sans text-yellow-400">pixel-sharp</span>
-              <span class="font-sans text-zinc-500"> frontends with purpose.</span>
-            </p>
-          </div>
-        </noscript>
       </div>
 
       {/* Scroll cue — anchored bottom-center, bobs via .animate-scrollbob (Plan 01 globals.css). */}
