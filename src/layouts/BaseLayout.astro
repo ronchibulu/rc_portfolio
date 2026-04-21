@@ -1,0 +1,26 @@
+---
+// Root layout — D-23 (single BaseLayout, no RootLayout/PageLayout split yet).
+// Side-effect imports below are the ONLY place fontsource and globals.css are imported.
+// Any other file importing them would cause double-registration (PITFALLS §8).
+import '@fontsource/press-start-2p';
+import '../styles/globals.css';
+
+interface Props {
+  title?: string;
+}
+
+const { title = 'Ronald Cheng — Portfolio' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <!-- D-27: Minimal meta only. SEO / OG / favicon / robots land in Phase 11. -->
+  </head>
+  <body class="min-h-dvh bg-zinc-950 text-zinc-100 antialiased">
+    <slot />
+  </body>
+</html>
