@@ -93,17 +93,18 @@ Plans:
 ### Phase 5: 3D Scene + Fixed Camera
 **Goal**: Gaming setup model loads with Suspense UX and displays at the reference camera angle from `image.png`; no orbit controls.
 **Depends on**: Phase 3, Phase 4
-**Requirements**: SCENE-004, SCENE-005
+**Requirements**: SCENE-004, SCENE-005, PERF-002
 **Canonical refs**: image.png, .planning/research/ARCHITECTURE.md §.glb Asset Loading, .planning/research/PITFALLS.md §4
 **Success Criteria** (what must be TRUE):
   1. Model loads on page load with a visible loading indicator during fetch.
   2. At scroll position = scene section top, the view matches the `image.png` reference.
   3. No orbit, drag, or rotate interaction is available to the user on the hero scene.
   4. Time-to-interactive for the scene is under 3 seconds on fast 3G throttling.
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 05-01: TBD
+- [ ] 05-01-PLAN.md — GameSetupScene.tsx + SceneView.tsx components (camera constants, lighting rig, Suspense UX, $sceneReady)
+- [ ] 05-02-PLAN.md — Integration: SceneCanvas placeholder removal + index.astro tracking div + SceneView mount + human visual verify
 
 ### Phase 6: Scroll Narrative + Camera Fly-In
 **Goal**: Scroll-driven camera fly-in from reference angle to the monitor, tagline fades, and hard cut to the OS screen placeholder.
