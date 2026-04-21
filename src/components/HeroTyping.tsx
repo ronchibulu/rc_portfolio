@@ -89,12 +89,15 @@ function renderTagline(tagline: string, visibleChars: number) {
 }
 
 export default function HeroTyping({ name, role, tagline }: HeroTypingProps) {
-  // Read reduced-motion ONCE at mount.
-  const [reduced] = useState<boolean>(() => prefersReducedMotion());
+  // Read reduced-motion ONCE at mount — feed the same value into every downstream hook
+  // so we don't re-evaluate window.matchMedia three times on the same tick.
+  const prefersReduced = prefersReducedMotion();
+
+  const [reduced] = useState<boolean>(() => prefersReduced);
 
   // Current typing phase.
   const [phase, setPhase] = useState<Phase>(() =>
-    prefersReducedMotion() ? { kind: 'done' } : { kind: 'idle' },
+    prefersReduced ? { kind: 'done' } : { kind: 'idle' },
   );
 
   // Visible-char counters per line.
@@ -103,7 +106,7 @@ export default function HeroTyping({ name, role, tagline }: HeroTypingProps) {
   // render identical to SSR (no hydration flash). On hydrate, the useEffect below resets
   // counters back to [0,0,0] and the animation starts from an empty state.
   const [shown, setShown] = useState<[number, number, number]>(() => {
-    if (typeof window === 'undefined' || prefersReducedMotion()) {
+    if (typeof window === 'undefined' || prefersReduced) {
       return [name.length, role.length, TAGLINE_PREFIX.length + tagline.length];
     }
     return [0, 0, 0];
