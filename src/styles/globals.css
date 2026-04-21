@@ -1,0 +1,39 @@
+/*
+ * Global styles — single source of truth for the design system.
+ * Tailwind v4 CSS-first config (D-10, D-14).
+ * Dark-only project (D-22) — no `@media (prefers-color-scheme)` branch.
+ */
+
+@import "tailwindcss";
+
+@theme {
+  /* --- Pixel font (D-13) --- */
+  --font-pixel: "Press Start 2P", ui-monospace, monospace;
+
+  /* --- Breakpoint overrides (D-20, FND-008) ---
+   * Tailwind v4 defaults: sm=640, md=768, lg=1024, xl=1280, 2xl=1536.
+   * Project needs: sm=375 (mobile target), md=768 (keep), lg=1024 (keep), 2xl=1920 (large desktop).
+   * Only override the two that differ; leave md/lg at defaults.
+   */
+  --breakpoint-sm: 375px;
+  --breakpoint-2xl: 1920px;
+
+  /* --- Semantic palette aliases (D-12 — alias only where reuse is guaranteed) ---
+   * CRT accent: used throughout OS screen + scanlines + focus rings in later phases.
+   * Exposed as --color-crt-accent so a future green-400 -> lime-400 swap happens in one place.
+   * All OTHER palette colors (zinc-950, zinc-900, zinc-800, zinc-100, zinc-700, zinc-500,
+   * yellow-400) are used via default Tailwind classes (D-11) — NO aliasing for them.
+   */
+  --color-crt-accent: var(--color-green-400);
+}
+
+/* Dark-only baseline. Set on <html> by BaseLayout.astro class="dark" AND reinforced here
+ * so even if the class is missing, the site still shows zinc-950. (D-22)
+ */
+html,
+body {
+  background-color: var(--color-zinc-950);
+  color: var(--color-zinc-100);
+  font-family: var(--font-sans); /* Tailwind v4 default system stack — font-pixel is opt-in */
+  min-height: 100dvh; /* D-20 intent: 100dvh over 100vh (CLAUDE.md hard rule) */
+}
