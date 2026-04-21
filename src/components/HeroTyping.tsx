@@ -97,9 +97,13 @@ export default function HeroTyping({ name, role, tagline }: HeroTypingProps) {
     prefersReducedMotion() ? { kind: 'done' } : { kind: 'idle' },
   );
 
-  // Visible-char counters per line. Under reduced motion we jump straight to full length.
+  // Visible-char counters per line.
+  // SSR (typeof window === "undefined") OR reduced-motion -> render final text immediately.
+  // This satisfies HERO-001 (no-JS users see the full hero) and keeps the first client
+  // render identical to SSR (no hydration flash). On hydrate, the useEffect below resets
+  // counters back to [0,0,0] and the animation starts from an empty state.
   const [shown, setShown] = useState<[number, number, number]>(() => {
-    if (prefersReducedMotion()) {
+    if (typeof window === 'undefined' || prefersReducedMotion()) {
       return [name.length, role.length, TAGLINE_PREFIX.length + tagline.length];
     }
     return [0, 0, 0];
@@ -111,6 +115,11 @@ export default function HeroTyping({ name, role, tagline }: HeroTypingProps) {
 
   useEffect(() => {
     if (reduced) return; // reduced-motion: everything is already in "done" state.
+
+    // Reset counters from the SSR-final snapshot back to empty so the animation
+    // starts from zero on hydrate. (HERO-001 seam — SSR renders final text, but
+    // once JS runs we play the typewriter from the top.)
+    setShown([0, 0, 0]);
 
     let cancelled = false;
     let timer: ReturnType<typeof setTimeout> | null = null;
