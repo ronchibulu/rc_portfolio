@@ -2,23 +2,23 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 4 — R3F Canvas Infrastructure (2/2 plans done — human verify pending)
-status: checkpoint
-last_updated: "2026-04-22T03:15:00.000Z"
+current_phase: 05
+status: phase_complete
+last_updated: "2026-04-22T03:38:00.000Z"
 progress:
   total_phases: 11
   completed_phases: 4
   total_plans: 9
   completed_plans: 9
-  percent: 100
+  percent: 36
 ---
 
 # Project State
 
 **Last updated:** 2026-04-22
 **Current milestone:** v1 — Ship portfolio to Vercel
-**Current phase:** 4 — R3F Canvas Infrastructure (2/2 plans done — awaiting human verify checkpoint)
-**Next up:** Phase 4 human verify checkpoint (browser visual + pointer-events + frameloop=demand checks), then Phase 5 begins
+**Current phase:** 4 — R3F Canvas Infrastructure ✓ **COMPLETE**
+**Next up:** Phase 5 — 3D Scene + Fixed Camera
 
 ---
 
@@ -33,7 +33,7 @@ Deliver dark pixel/8-bit retro portfolio with scroll-driven 3D camera fly-in, OS
 1. Scaffold & Design System — ✓ **complete (2026-04-22)** — 3/3 plans done, human checkpoint approved
 2. Layout, Nav, Footer, Hero — ✓ **complete (2026-04-22)** — 3/3 plans done, UI-SPEC approved, code review clean, UI review 11/12
 3. Asset Optimization Pipeline — ✓ **complete (2026-04-22)** — 1 plan, 51MB→1.89MB (Draco+dedup+prune+weld), Draco decoder installed
-4. R3F Canvas Infrastructure — ⏳ **awaiting human checkpoint** — Plan 01 ✅ (nanostores + SceneCanvas), Plan 02 ✅ (canvas mounted, z-index contract, build passes) — browser verify required
+4. R3F Canvas Infrastructure — ✓ **complete (2026-04-22)** — 2/2 plans done, canvas 1899×1202, z-index contract verified, zero console errors, Vite 504 fixed via sub-path imports
 5. 3D Scene + Fixed Camera — not started
 6. Scroll Narrative + Camera Fly-In — not started
 7. OS Screen Shell — not started
@@ -79,17 +79,11 @@ Deliver dark pixel/8-bit retro portfolio with scroll-driven 3D camera fly-in, OS
   - dist/index.html: canvas wrapper confirmed, 5× `relative z-10` confirmed, no SSR canvas markup
   - Commit: 935c2ae
   - SCENE-003 + PERF-001 covered
-  - Awaiting: checkpoint:human-verify (browser visual + pointer-events + frameloop=demand)
+  - Human verify: PASS — canvas 1899×1202 confirmed in DOM, wrapper classes correct, hero z-10 / nav z-40, zero console errors
+  - Dev-mode fix: switched from @react-three/drei barrel to sub-path imports (web/View.js, core/Gltf.js) — eliminates Vite dep optimizer 504
 
 ---
 
 ## Next Up
 
-Phase 4 checkpoint:human-verify — run `bun run dev`, open http://localhost:4321, verify:
-1. Visual parity with Phase 2 (dark bg, hero, nav, footer all visible)
-2. DevTools Elements: `<div class="pointer-events-none fixed inset-0 z-0">` + `<canvas>` inside
-3. Nav links, scroll-cue, footer links all clickable (pointer-events pass through)
-4. Zero console errors
-5. Performance: no idle draw calls (frameloop=demand)
-
-Then Phase 5 — 3D Scene + Fixed Camera.
+Phase 5 — 3D Scene + Fixed Camera (load gaming_setup_v12.glb, match reference camera angle, Suspense UX).

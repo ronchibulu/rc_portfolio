@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Scaffold & Design System** - Astro v5 + Tailwind v4 + Shadcn + Press Start 2P on a blank pixel-themed shell. ✓ 2026-04-22
 - [x] **Phase 2: Layout, Nav, Footer, Hero** - Static skeleton with typing hero, nav anchors, and footer contact links. ✓ 2026-04-22
 - [x] **Phase 3: Asset Optimization Pipeline** - Produce the < 2 MB optimized gaming_setup_v12.glb with self-hosted Draco decoder. ✓ 2026-04-22
-- [ ] **Phase 4: R3F Canvas Infrastructure** - Fixed full-viewport R3F canvas with View.Port, demand frameloop, and nanostores plumbing.
+- [x] **Phase 4: R3F Canvas Infrastructure** - Fixed full-viewport R3F canvas with View.Port, demand frameloop, and nanostores plumbing. ✓ 2026-04-22
 - [ ] **Phase 5: 3D Scene + Fixed Camera** - Model loads with Suspense UX at the reference camera angle; no orbit controls.
 - [ ] **Phase 6: Scroll Narrative + Camera Fly-In** - GSAP-driven camera fly-in, tagline fades, and hard cut to OS screen.
 - [ ] **Phase 7: OS Screen Shell** - Retro OS desktop with retro-grid + scanline background and responsive folder icons.
