@@ -13,7 +13,7 @@ Deliver a dark pixel/8-bit retro portfolio for Ronald Cheng, built on Astro v5 +
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Scaffold & Design System** - Astro v5 + Tailwind v4 + Shadcn + Press Start 2P on a blank pixel-themed shell. ✓ 2026-04-22
-- [ ] **Phase 2: Layout, Nav, Footer, Hero** - Static skeleton with typing hero, nav anchors, and footer contact links.
+- [x] **Phase 2: Layout, Nav, Footer, Hero** - Static skeleton with typing hero, nav anchors, and footer contact links. ✓ 2026-04-22
 - [ ] **Phase 3: Asset Optimization Pipeline** - Produce the < 2 MB optimized gaming_setup_v12.glb with self-hosted Draco decoder.
 - [ ] **Phase 4: R3F Canvas Infrastructure** - Fixed full-viewport R3F canvas with View.Port, demand frameloop, and nanostores plumbing.
 - [ ] **Phase 5: 3D Scene + Fixed Camera** - Model loads with Suspense UX at the reference camera angle; no orbit controls.
@@ -56,9 +56,9 @@ Plans:
 **Plans**: 3 complete
 
 Plans:
-- [ ] 02-01: Layout primitives — Header.astro, Footer.astro, globals.css (smooth-scroll, keyframes) (FND-006, FND-007, FND-008, FND-009, HERO-003, HERO-004)
-- [ ] 02-02: HeroTyping.tsx React island (typing FSM, caret blink, reduced-motion path) (HERO-001, HERO-002, HERO-004, FND-009)
-- [ ] 02-03: Page composition — replace index.astro + human visual smoke (FND-006, FND-007, FND-008, HERO-001..004)
+- [x] 02-01: Layout primitives — Header.astro, Footer.astro, globals.css (smooth-scroll, keyframes) (FND-006, FND-007, FND-008, FND-009, HERO-003, HERO-004)
+- [x] 02-02: HeroTyping.tsx React island (typing FSM, caret blink, reduced-motion path) (HERO-001, HERO-002, HERO-004, FND-009)
+- [x] 02-03: Page composition — replace index.astro + human visual smoke (FND-006, FND-007, FND-008, HERO-001..004)
 
 ### Phase 3: Asset Optimization Pipeline
 **Goal**: Produce a production-ready gaming_setup_v12.glb under 2 MB with self-hosted Draco decoder binaries.

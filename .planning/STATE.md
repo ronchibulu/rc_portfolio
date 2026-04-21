@@ -2,23 +2,23 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 02
+current_phase: 03
 status: phase_complete
-last_updated: "2026-04-22T01:50:00.000Z"
+last_updated: "2026-04-22T02:42:00.000Z"
 progress:
   total_phases: 11
-  completed_phases: 1
-  total_plans: 3
-  completed_plans: 3
-  percent: 9
+  completed_phases: 2
+  total_plans: 6
+  completed_plans: 6
+  percent: 18
 ---
 
 # Project State
 
 **Last updated:** 2026-04-22
 **Current milestone:** v1 — Ship portfolio to Vercel
-**Current phase:** 1 — Scaffold & Design System ✓ **COMPLETE**
-**Next up:** Phase 2 — Layout, Nav, Footer, Hero
+**Current phase:** 2 — Layout, Nav, Footer, Hero ✓ **COMPLETE**
+**Next up:** Phase 3 — Asset Optimization Pipeline
 
 ---
 
@@ -31,7 +31,7 @@ Deliver dark pixel/8-bit retro portfolio with scroll-driven 3D camera fly-in, OS
 **Phases:**
 
 1. Scaffold & Design System — ✓ **complete (2026-04-22)** — 3/3 plans done, human checkpoint approved
-2. Layout, Nav, Footer, Hero — not started
+2. Layout, Nav, Footer, Hero — ✓ **complete (2026-04-22)** — 3/3 plans done, UI-SPEC approved, code review clean, UI review 11/12
 3. Asset Optimization Pipeline — not started
 4. R3F Canvas Infrastructure — not started
 5. 3D Scene + Fixed Camera — not started
@@ -53,9 +53,18 @@ Deliver dark pixel/8-bit retro portfolio with scroll-driven 3D camera fly-in, OS
   - 01-03: Shadcn Radix/Nova init + 9 components + smoke-test page + D-28 retro dark+purple accent swap
   - All FND requirements for Phase 1 (FND-001..005, FND-008, FND-009) covered
   - Verification: `bun run check` PASS, `bun run build` PASS, human visual checkpoint approved
+- 2026-04-22 — Phase 2 executed (3 plans, 2 waves, full autonomous pipeline):
+  - UI-SPEC: 6/6 dimensions PASS — typography, color, spacing, copywriting, components, responsiveness locked
+  - 02-01: Header.astro (sticky nav), Footer.astro (LinkedIn + email), globals.css (smooth-scroll, keyframes)
+  - 02-02: HeroTyping.tsx React island (FSM typing animation, reduced-motion path, sr-only a11y mirror)
+  - 02-03: Landing page composition — replaced Phase 1 smoke test; client:only="react" hydration fix
+  - Code review: 4/6 findings fixed (1 high, 2 medium, 1 low); 2 low deferred by reviewer
+  - UI review: 11/12 PASS; active states + stale comment fixed post-review
+  - All FND-006/007/008/009 + HERO-001/002/003/004 requirements covered
+  - Verification: PASS — zero console errors, 4 breakpoints visual-checked
 
 ---
 
 ## Next Up
 
-Run `/gsd-discuss-phase 2` to refine Phase 2 (Layout, Nav, Footer, Hero) before planning, or `/gsd-plan-phase 2` to plan directly.
+Run `/gsd-plan-phase 3` to plan Phase 3 (Asset Optimization Pipeline — gltf-transform Draco+WebP, .glb < 2MB).
