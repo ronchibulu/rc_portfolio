@@ -12,7 +12,7 @@ Deliver a dark pixel/8-bit retro portfolio for Ronald Cheng, built on Astro v5 +
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Scaffold & Design System** - Astro v5 + Tailwind v4 + Shadcn + Press Start 2P on a blank pixel-themed shell.
+- [x] **Phase 1: Scaffold & Design System** - Astro v5 + Tailwind v4 + Shadcn + Press Start 2P on a blank pixel-themed shell. ✓ 2026-04-22
 - [ ] **Phase 2: Layout, Nav, Footer, Hero** - Static skeleton with typing hero, nav anchors, and footer contact links.
 - [ ] **Phase 3: Asset Optimization Pipeline** - Produce the < 2 MB optimized gaming_setup_v12.glb with self-hosted Draco decoder.
 - [ ] **Phase 4: R3F Canvas Infrastructure** - Fixed full-viewport R3F canvas with View.Port, demand frameloop, and nanostores plumbing.
@@ -36,10 +36,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. A Shadcn Button renders with correct spacing, rounding, and focus ring using default Tailwind classes only.
   3. `npm run build` produces a static `dist/` directory with no Tailwind purge warnings or console errors.
   4. Responsive layout holds at 375 / 768 / 1024 / 1920 on an empty reference page.
-**Plans**: TBD
+**Plans**: 3 complete
 
 Plans:
-- [ ] 01-01: TBD
+- [x] 01-01: Astro scaffold + bun + Biome/Prettier + tsconfig + build scripts (FND-001)
+- [x] 01-02: Tailwind v4 @theme + BaseLayout.astro + cn helper + placeholder page (FND-002/004/005/008/009)
+- [x] 01-03: Shadcn init + 9 components + smoke-test page + D-28 retro dark+purple palette (FND-003/005/008/009)
 
 ### Phase 2: Layout, Nav, Footer, Hero
 **Goal**: Ship-able landing page skeleton — hero typing intro, nav, and footer — before any 3D work starts.
@@ -200,7 +202,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Scaffold & Design System | 0/0 | Not started | - |
+| 1. Scaffold & Design System | 3/3 | ✓ Complete | 2026-04-22 |
 | 2. Layout, Nav, Footer, Hero | 0/0 | Not started | - |
 | 3. Asset Optimization Pipeline | 0/0 | Not started | - |
 | 4. R3F Canvas Infrastructure | 0/0 | Not started | - |
