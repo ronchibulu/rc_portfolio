@@ -27,6 +27,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
 import HeroTyping from '@/components/HeroTyping';
+import SceneCanvas from '@/components/canvas/SceneCanvas';
 
 const hero = {
   name: "Hi, I'm Ronald.",
@@ -36,11 +37,26 @@ const hero = {
 ---
 
 <BaseLayout title="Ronald Cheng — Senior Full-Stack Developer">
+  {/* ===== CANVAS LAYER (Phase 4) ===== */}
+  {/*
+    * Fixed full-viewport R3F canvas behind all HTML content.
+    * CSS contract (04-UI-SPEC §Canvas CSS Contract):
+    *   - fixed inset-0: covers the full viewport at all breakpoints, no responsive overrides needed.
+    *   - z-0: behind all content layers (z-10+).
+    *   - pointer-events-none: mouse/touch events pass through to nav, hero, footer.
+    *   - aria-hidden="true": decorative 3D background, excluded from a11y tree.
+    * client:only="react": no SSR output; canvas hydrates client-side only (AGENTS.md hard rule).
+    * NEVER use client:load or client:visible for R3F islands.
+    */}
+  <div class="pointer-events-none fixed inset-0 z-0" aria-hidden="true">
+    <SceneCanvas client:only="react" />
+  </div>
+
   <Header />
 
   <main>
     {/* =============== HERO =============== */}
-    <section id="hero" class="relative flex min-h-dvh scroll-mt-16 items-center">
+    <section id="hero" class="relative z-10 flex min-h-dvh scroll-mt-16 items-center">
       <div
         class="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 md:py-24 lg:px-12 lg:py-32"
       >
@@ -87,7 +103,7 @@ const hero = {
     {/* =============== PROJECTS PLACEHOLDER — arriving in Phase 7 =============== */}
     <section
       id="projects"
-      class="flex min-h-dvh scroll-mt-16 items-center justify-center px-4 sm:px-6 lg:px-12"
+      class="relative z-10 flex min-h-dvh scroll-mt-16 items-center justify-center px-4 sm:px-6 lg:px-12"
     >
       <p class="text-center font-pixel text-sm text-zinc-500">
         Projects — arriving in Phase 7.
@@ -97,7 +113,7 @@ const hero = {
     {/* =============== ABOUT PLACEHOLDER — arriving in Phase 9 =============== */}
     <section
       id="about"
-      class="flex min-h-dvh scroll-mt-16 items-center justify-center px-4 sm:px-6 lg:px-12"
+      class="relative z-10 flex min-h-dvh scroll-mt-16 items-center justify-center px-4 sm:px-6 lg:px-12"
     >
       <p class="text-center font-pixel text-sm text-zinc-500">
         About Me — arriving in Phase 9.
@@ -107,7 +123,7 @@ const hero = {
     {/* =============== CONTACT PLACEHOLDER — footer is contact =============== */}
     <section
       id="contact"
-      class="flex min-h-dvh scroll-mt-16 items-center justify-center px-4 sm:px-6 lg:px-12"
+      class="relative z-10 flex min-h-dvh scroll-mt-16 items-center justify-center px-4 sm:px-6 lg:px-12"
     >
       <p class="text-center font-pixel text-sm text-zinc-500">
         Contact — see footer below.
