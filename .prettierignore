@@ -1,0 +1,12 @@
+# Prettier only formats *.astro in this repo.
+# Biome owns .ts/.tsx/.js/.jsx/.json. Everything below is intentionally ignored.
+*
+!*.astro
+!src/
+src/**/*
+!src/**/*.astro
+dist/
+.astro/
+node_modules/
+bun.lock
+bun.lockb
