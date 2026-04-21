@@ -1,11 +1,107 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+// Phase 1 smoke-test page (D-26).
+// Replaces the Plan 02 placeholder. Plan 03 Task 2 output.
+// Phase 2 replaces this with the real hero section.
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { Button } from '@/components/ui/button';
 ---
 
-<BaseLayout>
-  <main class="flex min-h-dvh items-center justify-center p-8">
-    <h1 class="font-pixel text-center text-2xl leading-relaxed text-green-400 md:text-4xl">
-      Phase 1 shell online.
-    </h1>
+<BaseLayout title="Ronald Cheng — Portfolio (Phase 1 smoke test)">
+  <main class="mx-auto flex min-h-dvh max-w-5xl flex-col gap-12 p-6 md:p-12">
+    {/* 1. Pixel-font heading — proves fontsource + font-pixel token wired */}
+    <header class="space-y-4">
+      <h1 class="font-pixel text-2xl leading-relaxed text-green-400 md:text-4xl lg:text-5xl">
+        Phase 1 Design System
+      </h1>
+      <p class="text-sm text-zinc-500 md:text-base">
+        Astro v5 static + React 19 islands + Tailwind v4 CSS-first theme + Shadcn primitives.
+      </p>
+    </header>
+
+    {/* 2. Shadcn Button smoke (D-26, FND-003) — default + secondary variants.
+         Rendered as React island via client:load so interactivity (focus/hover) is active. */}
+    <section class="space-y-4">
+      <h2 class="font-pixel text-lg text-zinc-100">Shadcn Button</h2>
+      <div class="flex flex-wrap gap-4">
+        <Button client:load>Default variant</Button>
+        <Button client:load variant="secondary">Secondary variant</Button>
+      </div>
+      <p class="text-xs text-zinc-500">
+        Verify: rounded corners, padding, and focus ring use Tailwind v4 defaults only.
+      </p>
+    </section>
+
+    {/* 3. Palette swatches (D-26, FND-005) — every token from CLAUDE.md color palette. */}
+    <section class="space-y-4">
+      <h2 class="font-pixel text-lg text-zinc-100">Palette</h2>
+      <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
+        <div class="flex flex-col gap-2 rounded-sm border border-zinc-700 p-3">
+          <div class="h-12 w-full bg-zinc-950"></div>
+          <span class="font-pixel text-[10px] text-zinc-400">bg-zinc-950</span>
+        </div>
+        <div class="flex flex-col gap-2 rounded-sm border border-zinc-700 p-3">
+          <div class="h-12 w-full bg-zinc-900"></div>
+          <span class="font-pixel text-[10px] text-zinc-400">bg-zinc-900</span>
+        </div>
+        <div class="flex flex-col gap-2 rounded-sm border border-zinc-700 p-3">
+          <div class="h-12 w-full bg-zinc-800"></div>
+          <span class="font-pixel text-[10px] text-zinc-400">bg-zinc-800</span>
+        </div>
+        <div class="flex flex-col gap-2 rounded-sm border border-zinc-700 p-3">
+          <div class="h-12 w-full bg-zinc-100"></div>
+          <span class="font-pixel text-[10px] text-zinc-400">bg-zinc-100</span>
+        </div>
+        <div class="flex flex-col gap-2 rounded-sm border border-zinc-700 p-3">
+          <div class="h-12 w-full bg-green-400"></div>
+          <span class="font-pixel text-[10px] text-zinc-400">bg-green-400</span>
+        </div>
+        <div class="flex flex-col gap-2 rounded-sm border border-zinc-700 p-3">
+          <div class="h-12 w-full bg-lime-400"></div>
+          <span class="font-pixel text-[10px] text-zinc-400">bg-lime-400</span>
+        </div>
+        <div class="flex flex-col gap-2 rounded-sm border border-zinc-700 p-3">
+          <div class="h-12 w-full bg-yellow-400"></div>
+          <span class="font-pixel text-[10px] text-zinc-400">bg-yellow-400</span>
+        </div>
+        <div class="flex flex-col gap-2 rounded-sm border border-zinc-700 p-3">
+          <div class="h-12 w-full bg-zinc-700"></div>
+          <span class="font-pixel text-[10px] text-zinc-400">bg-zinc-700</span>
+        </div>
+        <div class="flex flex-col gap-2 rounded-sm border border-zinc-700 p-3">
+          <div class="h-12 w-full bg-zinc-500"></div>
+          <span class="font-pixel text-[10px] text-zinc-400">bg-zinc-500</span>
+        </div>
+      </div>
+      <p class="text-xs text-zinc-500">
+        Nine palette tokens from CLAUDE.md — if any swatch is blank, Tailwind is not wired.
+      </p>
+    </section>
+
+    {/* 4. Breakpoint indicator (D-26, FND-008) — proves sm=375 / md=768 / lg=1024 / 2xl=1920. */}
+    <section class="space-y-4">
+      <h2 class="font-pixel text-lg text-zinc-100">Breakpoint</h2>
+      <div class="flex items-center gap-3 rounded-sm border border-zinc-700 bg-zinc-900 p-4">
+        <span class="font-pixel text-sm text-yellow-400">
+          <span class="block sm:hidden">xs (&lt; 375)</span>
+          <span class="hidden sm:block md:hidden">sm — 375+</span>
+          <span class="hidden md:block lg:hidden">md — 768+</span>
+          <span class="hidden lg:block 2xl:hidden">lg — 1024+</span>
+          <span class="hidden 2xl:block">2xl — 1920+</span>
+        </span>
+      </div>
+      <p class="text-xs text-zinc-500">
+        Resize the window; the label updates at 375 / 768 / 1024 / 1920 as viewport crosses each.
+      </p>
+    </section>
+
+    {/* 5. CRT accent token proof — the semantic alias defined in @theme */}
+    <section class="space-y-4">
+      <h2 class="font-pixel text-lg text-zinc-100">CRT accent token</h2>
+      <div class="rounded-sm border border-zinc-700 bg-zinc-900 p-4">
+        <p class="font-pixel text-sm text-(--color-crt-accent)">
+          This text uses --color-crt-accent (aliased to green-400 in @theme).
+        </p>
+      </div>
+    </section>
   </main>
 </BaseLayout>
