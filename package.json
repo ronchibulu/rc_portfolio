@@ -14,7 +14,8 @@
     "astro": "astro",
     "lint": "biome lint --no-errors-on-unmatched src && astro check",
     "format": "biome format --write --no-errors-on-unmatched src *.mjs *.json && prettier --write \"src/**/*.astro\"",
-    "check": "biome check --no-errors-on-unmatched src && astro check"
+    "check": "biome check --no-errors-on-unmatched src && astro check",
+    "optimize-model": "gltf-transform dedup gaming_setup_v12.glb tmp_dedup.glb && gltf-transform prune tmp_dedup.glb tmp_pruned.glb && gltf-transform flatten tmp_pruned.glb tmp_flat.glb && gltf-transform weld tmp_flat.glb tmp_welded.glb && gltf-transform draco tmp_welded.glb public/models/gaming_setup_v12.glb --quantize-position 10 --quantize-normal 8 --quantize-texcoord 10 && rm -f tmp_dedup.glb tmp_pruned.glb tmp_flat.glb tmp_welded.glb"
   },
   "dependencies": {
     "@astrojs/react": "^4",
@@ -45,6 +46,8 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.8",
     "@biomejs/biome": "^1",
+    "@gltf-transform/cli": "^4.3.0",
+    "@gltf-transform/extensions": "^4.3.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/three": "^0.184.0",
