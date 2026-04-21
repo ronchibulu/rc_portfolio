@@ -206,15 +206,35 @@ export default function HeroTyping({ name, role, tagline }: HeroTypingProps) {
 
   return (
     <div className="flex flex-col gap-4 md:gap-6">
-      <h1
+      {/*
+       * SR-only mirror: announce the final hero copy exactly once. The animated
+       * elements below are aria-hidden so screen readers do not re-announce on
+       * every character tick (per-render announcement is SR/browser-dependent
+       * and at best noisy, at worst unintelligible). The <h1> lives here (not on
+       * the visual element) so the document keeps exactly one accessible heading
+       * with stable final text — the visual <div> below renders the same name
+       * with the typing reveal.
+       */}
+      <div className="sr-only">
+        <h1>{name}</h1>
+        <p>{role}</p>
+        <p>
+          {TAGLINE_PREFIX}
+          {tagline}
+        </p>
+      </div>
+
+      <div
+        aria-hidden="true"
         suppressHydrationWarning
         className="font-pixel text-3xl leading-tight text-zinc-100 sm:text-4xl md:text-5xl lg:text-6xl"
       >
         {visibleName}
         {currentLine === 0 ? caretNode(false) : null}
-      </h1>
+      </div>
 
       <p
+        aria-hidden="true"
         suppressHydrationWarning
         className="font-pixel text-base leading-snug text-purple-400 sm:text-lg md:text-xl lg:text-2xl"
       >
@@ -222,7 +242,11 @@ export default function HeroTyping({ name, role, tagline }: HeroTypingProps) {
         {currentLine === 1 ? caretNode(false) : null}
       </p>
 
-      <p suppressHydrationWarning className="text-sm leading-relaxed sm:text-base md:text-lg">
+      <p
+        aria-hidden="true"
+        suppressHydrationWarning
+        className="text-sm leading-relaxed sm:text-base md:text-lg"
+      >
         {renderTagline(tagline, shown2)}
         {currentLine === 2 ? caretNode(false) : null}
         {isDone ? caretNode(true) : null}
