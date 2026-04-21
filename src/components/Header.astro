@@ -1,0 +1,59 @@
+---
+/*
+ * Phase 2 — Header.astro
+ * Sticky top nav per 02-UI-SPEC §Nav Contract.
+ *
+ * Structure: <header> > <nav aria-label="Primary"> > inner flex row with brand left, <ul> right.
+ * Height: h-16 (64px) — MUST stay synced with globals.css scroll-padding-top: 4rem.
+ * Background: solid zinc-950 at sm:, zinc-950/80 + backdrop-blur-sm at md:+ (readable over
+ * future 3D canvas in Phase 4+).
+ * Accent: text-zinc-500 resting → text-purple-400 on hover + focus-visible.
+ * Tap targets: min-h-11 inline-flex items-center → guaranteed ≥44px iOS HIG on sm:.
+ * Current-section (aria-current) highlighting is DEFERRED to Phase 6 (needs scroll-spy).
+ */
+---
+
+<header
+  class="sticky top-0 z-40 h-16 w-full border-b border-zinc-800 bg-zinc-950 md:bg-zinc-950/80 md:backdrop-blur-sm"
+>
+  <nav
+    aria-label="Primary"
+    class="mx-auto flex h-full max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-12"
+  >
+    {/* Brand — RC, links to page top */}
+    <a
+      href="/"
+      class="font-pixel text-sm text-zinc-100 transition-colors hover:text-purple-400 focus-visible:rounded-sm focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 md:text-base"
+    >
+      RC
+    </a>
+
+    {/* Anchors — Projects / About / Contact */}
+    <ul class="flex items-center gap-4 sm:gap-6 lg:gap-8">
+      <li>
+        <a
+          href="#projects"
+          class="inline-flex min-h-11 items-center px-2 py-2 font-pixel text-xs text-zinc-500 transition-colors hover:text-purple-400 focus-visible:rounded-sm focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 sm:text-sm"
+        >
+          Projects
+        </a>
+      </li>
+      <li>
+        <a
+          href="#about"
+          class="inline-flex min-h-11 items-center px-2 py-2 font-pixel text-xs text-zinc-500 transition-colors hover:text-purple-400 focus-visible:rounded-sm focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 sm:text-sm"
+        >
+          About
+        </a>
+      </li>
+      <li>
+        <a
+          href="#contact"
+          class="inline-flex min-h-11 items-center px-2 py-2 font-pixel text-xs text-zinc-500 transition-colors hover:text-purple-400 focus-visible:rounded-sm focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 sm:text-sm"
+        >
+          Contact
+        </a>
+      </li>
+    </ul>
+  </nav>
+</header>
