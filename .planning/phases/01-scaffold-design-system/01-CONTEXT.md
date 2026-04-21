@@ -32,8 +32,8 @@ Not in scope (belongs to later phases): nav UI, hero typing, footer content (Pha
 
 ### Tailwind v4 + design tokens
 - **D-10:** Theme tokens defined in a single CSS `@theme {}` block inside `src/styles/globals.css`. No `tailwind.config.js`.
-- **D-11:** Strategy: **use literal Tailwind default classes as the primary styling tool** (`bg-zinc-950`, `text-green-400`, `border-zinc-700`). Keep the color math simple — the default zinc/green/yellow palette already matches the pixel/8-bit aesthetic.
-- **D-12:** Introduce a **semantic CSS variable alias only when a token is reused and needs to be renameable in one place** — e.g., `--color-crt-accent` if green-400 is the CRT glow everywhere and might swap to lime-400 later. Do NOT pre-emptively alias every color. Alias only on evidence of reuse, not speculation.
+- **D-11:** Strategy: **use literal Tailwind default classes as the primary styling tool** (`bg-zinc-950`, `text-purple-400`, `border-zinc-700`). Keep the color math simple — the default zinc/purple/yellow palette already matches the retro dark+purple aesthetic (see D-28).
+- **D-12:** Introduce a **semantic CSS variable alias only when a token is reused and needs to be renameable in one place** — e.g., `--color-crt-accent` if purple-400 is the CRT glow everywhere and might swap to e.g. violet-400 or fuchsia-400 later (see D-28). Do NOT pre-emptively alias every color. Alias only on evidence of reuse, not speculation.
 - **D-13:** Pixel font token: `--font-pixel: 'Press Start 2P', monospace;` in `@theme {}`, referenced via `font-pixel` utility class.
 - **D-14:** `@import "tailwindcss";` at the top of `globals.css` — NOT the deprecated `@tailwind base/components/utilities` directives.
 - **D-15:** `applyBaseStyles: false` on the Tailwind Vite plugin configuration so base styles aren't loaded twice across Astro + Shadcn.
@@ -60,9 +60,16 @@ Not in scope (belongs to later phases): nav UI, hero typing, footer content (Pha
 - **D-26:** `src/pages/index.astro` contains a minimal **design-system smoke test** for Phase 1 verification only (replaced in Phase 2):
   - One heading using `font-pixel` Press Start 2P
   - One `<Button>` Shadcn primitive with default + secondary variants
-  - Color swatches displaying every palette token (zinc-950/900/800, zinc-100, green-400, lime-400, yellow-400, zinc-700, zinc-500)
+  - Color swatches displaying every palette token (zinc-950/900/800, zinc-100, purple-400, violet-400, yellow-400, zinc-700, zinc-500)
   - Breakpoint indicator visible at each of 375 / 768 / 1024 / 1920 (`sm:block md:hidden` pattern)
 - **D-27:** No routing, no nav, no SEO meta beyond `<title>Ronald Cheng — Portfolio</title>` + `<meta charset>` in BaseLayout. Meta/OG/favicon baked in Phase 11 (deploy pass).
+- **D-28** (added 2026-04-22, post-D-27 during Phase 1 execution): **Retro dark+purple theme.** Shift CRT/accent palette from green→purple so the look is "retro dark+purple" instead of "classic green terminal":
+  - Primary accent: `purple-400` (replaces `green-400`) — used for H1, CRT glow, focus ring accents, OS scanlines in later phases.
+  - Secondary accent: `violet-400` (replaces `lime-400`).
+  - `--color-crt-accent` alias now maps to `var(--color-purple-400)` (still a single alias point per D-12, so a future swap to e.g. `fuchsia-400` is one-line).
+  - Highlight (`yellow-400`) is unchanged — stays readable against a purple accent.
+  - Zinc-950 dark baseline (D-22) is unchanged — this is an accent shift, not a background shift.
+  - Propagates to: `AGENTS.md` §Color Palette, `CLAUDE.md` §Color Palette, `.planning/PROJECT.md` §Color palette, D-11 (examples), D-12 (comment), D-26 (smoke-test swatch list). Plans 01-01 / 01-02 / 01-03 history retains the original green references because they reflect what was executed before the D-28 decision; fix-up commit aligns only the live code + docs.
 
 ### Claude's Discretion
 - Exact Biome rule set toggles (recommended ruleset accepted)

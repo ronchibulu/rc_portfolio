@@ -37,8 +37,9 @@
 
   /* --- Semantic palette aliases (D-12 — alias only where reuse is guaranteed) ---
    * CRT accent: used throughout OS screen + scanlines + focus rings in later phases.
+   * D-28: Retro dark+purple theme — purple-400 replaces green-400 as the CRT glow.
    */
-  --color-crt-accent: var(--color-green-400);
+  --color-crt-accent: var(--color-purple-400);
 }
 
 /*

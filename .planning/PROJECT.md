@@ -84,7 +84,7 @@ A recruiter landing on the site immediately understands Ronald's craft — the s
 - Background: `zinc-950` / `black`
 - Surface/card: `zinc-900`, `zinc-800`
 - Primary text: `zinc-100`
-- Accent green (pixel CRT): `green-400` / `lime-400`
+- Accent purple (pixel CRT glow, D-28): `purple-400` / `violet-400`
 - Accent amber (highlight): `yellow-400`
 - Border: `zinc-700`
 - Muted text: `zinc-500`

@@ -58,7 +58,7 @@ Always read relevant planning docs before implementation. `STATE.md` tells you w
 - Primary text: `zinc-100`
 - Border: `zinc-700`
 - Muted: `zinc-500`
-- CRT accent: `green-400` / `lime-400`
+- CRT accent: `purple-400` / `violet-400` (D-28 — retro dark+purple theme)
 - Highlight: `yellow-400`
 
 ## Responsive Breakpoints (min-width)
