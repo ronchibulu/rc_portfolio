@@ -17,8 +17,8 @@ progress:
 
 **Last updated:** 2026-04-22
 **Current milestone:** v1 — Ship portfolio to Vercel
-**Current phase:** 5 — 3D Scene + Fixed Camera (in progress — 1/2 plans done)
-**Next up:** Phase 5 Plan 02 — integrate SceneView into index.astro
+**Current phase:** 5 — 3D Scene + Fixed Camera (in progress — 2/2 plans executed, human checkpoint pending)
+**Next up:** Human visual checkpoint for Phase 5 Plan 02 — confirm camera angle, then Phase 6
 
 ---
 
@@ -34,7 +34,7 @@ Deliver dark pixel/8-bit retro portfolio with scroll-driven 3D camera fly-in, OS
 2. Layout, Nav, Footer, Hero — ✓ **complete (2026-04-22)** — 3/3 plans done, UI-SPEC approved, code review clean, UI review 11/12
 3. Asset Optimization Pipeline — ✓ **complete (2026-04-22)** — 1 plan, 51MB→1.89MB (Draco+dedup+prune+weld), Draco decoder installed
 4. R3F Canvas Infrastructure — ✓ **complete (2026-04-22)** — 2/2 plans done, canvas 1899×1202, z-index contract verified, zero console errors, Vite 504 fixed via sub-path imports
-5. 3D Scene + Fixed Camera — 🔄 **in progress (1/2 plans)** — Plan 01: GameSetupScene.tsx + SceneView.tsx ✓
+5. 3D Scene + Fixed Camera — 🔄 **checkpoint pending (2/2 plans executed)** — Plan 01: GameSetupScene.tsx + SceneView.tsx ✓ | Plan 02: integration wired, build passes, human visual checkpoint required
 6. Scroll Narrative + Camera Fly-In — not started
 7. OS Screen Shell — not started
 8. Project Dialogs + Image Slider — not started
@@ -94,6 +94,17 @@ Deliver dark pixel/8-bit retro portfolio with scroll-driven 3D camera fly-in, OS
 
 ---
 
+- 2026-04-22 — Phase 5 Plan 02 executed (05-02):
+  - 05-02: Removed Phase 4 placeholder `<ambientLight intensity={0.5} />` from SceneCanvas.tsx
+  - 05-02: Added hero-canvas-view tracking div + SceneView island to index.astro hero section
+  - 05-02: Fixed useProgress import path (Rule 3): `misc/useProgress.js` → `core/Progress.js` (misc/ subdir doesn't exist)
+  - Biome check: PASS (8 files, 0 errors); bunx astro build: PASS (exit 0, 363 modules, no TypeScript errors)
+  - Commit: bdfc0e9
+  - SCENE-004 + SCENE-005 + PERF-002 covered (camera constants + model integration complete)
+  - Human checkpoint: PENDING — browser visual verification of camera angle required before Phase 6
+
+---
+
 ## Next Up
 
-Phase 5 Plan 02 — integrate SceneView into index.astro, wire SceneCanvas with full lighting rig, visual checkpoint.
+Human visual checkpoint: run `bun run dev`, open http://localhost:4321, verify scene renders at reference angle (image.png), then proceed to Phase 6 planning.
