@@ -2,23 +2,23 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 03
+current_phase: 04
 status: phase_complete
-last_updated: "2026-04-22T02:42:00.000Z"
+last_updated: "2026-04-22T02:52:00.000Z"
 progress:
   total_phases: 11
-  completed_phases: 2
-  total_plans: 6
-  completed_plans: 6
-  percent: 18
+  completed_phases: 3
+  total_plans: 7
+  completed_plans: 7
+  percent: 27
 ---
 
 # Project State
 
 **Last updated:** 2026-04-22
 **Current milestone:** v1 — Ship portfolio to Vercel
-**Current phase:** 2 — Layout, Nav, Footer, Hero ✓ **COMPLETE**
-**Next up:** Phase 3 — Asset Optimization Pipeline
+**Current phase:** 3 — Asset Optimization Pipeline ✓ **COMPLETE**
+**Next up:** Phase 4 — R3F Canvas Infrastructure
 
 ---
 
@@ -32,7 +32,7 @@ Deliver dark pixel/8-bit retro portfolio with scroll-driven 3D camera fly-in, OS
 
 1. Scaffold & Design System — ✓ **complete (2026-04-22)** — 3/3 plans done, human checkpoint approved
 2. Layout, Nav, Footer, Hero — ✓ **complete (2026-04-22)** — 3/3 plans done, UI-SPEC approved, code review clean, UI review 11/12
-3. Asset Optimization Pipeline — not started
+3. Asset Optimization Pipeline — ✓ **complete (2026-04-22)** — 1 plan, 51MB→1.89MB (Draco+dedup+prune+weld), Draco decoder installed
 4. R3F Canvas Infrastructure — not started
 5. 3D Scene + Fixed Camera — not started
 6. Scroll Narrative + Camera Fly-In — not started
@@ -67,4 +67,4 @@ Deliver dark pixel/8-bit retro portfolio with scroll-driven 3D camera fly-in, OS
 
 ## Next Up
 
-Run `/gsd-plan-phase 3` to plan Phase 3 (Asset Optimization Pipeline — gltf-transform Draco+WebP, .glb < 2MB).
+Run `/gsd-plan-phase 4` to plan Phase 4 (R3F Canvas Infrastructure — fixed full-viewport canvas, View.Port, demand frameloop, nanostores).
