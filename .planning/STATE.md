@@ -2,23 +2,23 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 04
-status: phase_complete
-last_updated: "2026-04-22T02:52:00.000Z"
+current_phase: 04-r3f-canvas-infrastructure
+status: in_progress
+last_updated: "2026-04-22T03:08:00.000Z"
 progress:
   total_phases: 11
   completed_phases: 3
-  total_plans: 7
-  completed_plans: 7
-  percent: 27
+  total_plans: 9
+  completed_plans: 9
+  percent: 91
 ---
 
 # Project State
 
 **Last updated:** 2026-04-22
 **Current milestone:** v1 — Ship portfolio to Vercel
-**Current phase:** 3 — Asset Optimization Pipeline ✓ **COMPLETE**
-**Next up:** Phase 4 — R3F Canvas Infrastructure
+**Current phase:** 4 — R3F Canvas Infrastructure (1/2 plans done)
+**Next up:** Phase 4 Plan 02 — index.astro canvas mount + z-index stack
 
 ---
 
@@ -33,7 +33,7 @@ Deliver dark pixel/8-bit retro portfolio with scroll-driven 3D camera fly-in, OS
 1. Scaffold & Design System — ✓ **complete (2026-04-22)** — 3/3 plans done, human checkpoint approved
 2. Layout, Nav, Footer, Hero — ✓ **complete (2026-04-22)** — 3/3 plans done, UI-SPEC approved, code review clean, UI review 11/12
 3. Asset Optimization Pipeline — ✓ **complete (2026-04-22)** — 1 plan, 51MB→1.89MB (Draco+dedup+prune+weld), Draco decoder installed
-4. R3F Canvas Infrastructure — not started
+4. R3F Canvas Infrastructure — 🔄 **in progress** — Plan 01 done (nanostores + SceneCanvas), Plan 02 pending
 5. 3D Scene + Fixed Camera — not started
 6. Scroll Narrative + Camera Fly-In — not started
 7. OS Screen Shell — not started
@@ -63,8 +63,15 @@ Deliver dark pixel/8-bit retro portfolio with scroll-driven 3D camera fly-in, OS
   - All FND-006/007/008/009 + HERO-001/002/003/004 requirements covered
   - Verification: PASS — zero console errors, 4 breakpoints visual-checked
 
+- 2026-04-22 — Phase 4 Plan 01 executed (04-01):
+  - 04-01: nanostores atoms ($gpuTier, $scrollProgress, $sceneReady) + SceneCanvas R3F island
+  - `frameloop="demand"`, View.Port, Draco path init, CanvasInit invalidate()
+  - Biome check: PASS (6 files, no errors); astro check: pre-existing OOM (not caused by these files)
+  - Commits: 3d5589f (stores), dfb4e32 (SceneCanvas)
+  - SCENE-003 + SCENE-006 covered
+
 ---
 
 ## Next Up
 
-Run `/gsd-plan-phase 4` to plan Phase 4 (R3F Canvas Infrastructure — fixed full-viewport canvas, View.Port, demand frameloop, nanostores).
+Run Phase 4 Plan 02 — index.astro canvas mount + z-index stack (human verify checkpoint).

@@ -87,7 +87,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 04-01-PLAN.md — nanostores atoms + SceneCanvas R3F island (SCENE-003, SCENE-006)
+- [x] 04-01-PLAN.md — nanostores atoms + SceneCanvas R3F island (SCENE-003, SCENE-006)
 - [ ] 04-02-PLAN.md — index.astro mount + z-index stack enforcement + human verify (SCENE-003, PERF-001)
 
 ### Phase 5: 3D Scene + Fixed Camera
@@ -208,7 +208,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 1. Scaffold & Design System | 3/3 | ✓ Complete | 2026-04-22 |
 | 2. Layout, Nav, Footer, Hero | 0/3 | Planned | - |
 | 3. Asset Optimization Pipeline | 0/0 | Not started | - |
-| 4. R3F Canvas Infrastructure | 0/2 | Planned | - |
+| 4. R3F Canvas Infrastructure | 1/2 | In Progress | 2026-04-22 |
 | 5. 3D Scene + Fixed Camera | 0/0 | Not started | - |
 | 6. Scroll Narrative + Camera Fly-In | 0/0 | Not started | - |
 | 7. OS Screen Shell | 0/0 | Not started | - |
