@@ -7,12 +7,10 @@
  *   BaseLayout > Header (sticky, h-16) > <main> (hero + 3 placeholder sections) > Footer.
  *
  * Hero (HERO-001/002/003/004):
- *   - <HeroTyping> React island mounted with client:load. After the Plan 03 Task 1
- *     patch to HeroTyping.tsx, SSR renders the final-state strings so no-JS users
- *     see the complete hero copy immediately, and hydration resets counters to [0,0,0]
- *     before playing the typewriter. The SSR'd island markup is the SINGLE source of
- *     truth for HERO-001 — no <noscript> fallback is needed (it would render a duplicate
- *     hero block for JS-disabled users).
+ *   - <HeroTyping> React island mounted with client:only="react" (no SSR output,
+ *     zero hydration mismatch risk). HERO-001 (no-JS visibility) is satisfied by the
+ *     <noscript> static fallback below the island. Hard rule: complex React islands
+ *     use client:only per AGENTS.md.
  *   - Scroll cue: <a href="#projects"> wrapping the ▼ glyph, bobbing via .animate-scrollbob
  *     (defined in Plan 01 globals.css, gated by prefers-reduced-motion: no-preference).
  *
