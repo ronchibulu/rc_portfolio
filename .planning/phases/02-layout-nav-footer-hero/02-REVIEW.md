@@ -1,7 +1,9 @@
 ---
 phase: 02-layout-nav-footer-hero
-status: findings
+status: fixed
 reviewed_at: 2026-04-22T02:25:00Z
+fixed_at: 2026-04-22T02:27:30Z
+fix_report: .planning/phases/02-layout-nav-footer-hero/02-REVIEW-FIX.md
 depth: standard
 files_reviewed: 5
 files_reviewed_list:
@@ -20,6 +22,12 @@ findings:
   warning: 3
   info: 3
   total: 6
+resolution:
+  fixed: 4
+  skipped: 2
+  fixed_ids: [HI-01, ME-01, ME-02, LO-01]
+  skipped_ids: [LO-02, LO-03]
+  skipped_rationale: reviewer's own Phase 2 recommendation was "no change" on both; LO-03's suggested fix additionally violates FND-009 (no arbitrary Tailwind values).
 ---
 
 # Phase 2: Code Review Report
