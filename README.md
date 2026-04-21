@@ -1,43 +1,44 @@
-# Astro Starter Kit: Minimal
+# Ronald Cheng — Portfolio
 
-```sh
-bun create astro@latest -- --template minimal
+Dark pixel/8-bit retro portfolio built on **Astro v5** static + **React 19** islands,
+with a future R3F gaming-setup scene driven by GSAP ScrollTrigger and an OS-style
+project browser.
+
+## Requirements
+
+- **Bun** — this project uses bun as its sole package manager. Do **not** run
+  `npm install` or `pnpm install`; both will create a competing lockfile that
+  fights `bun.lock`.
+  Install bun: https://bun.sh/docs/installation
+
+## Setup
+
+```bash
+bun install
+bun run dev
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Dev server defaults to http://localhost:4321.
 
-## 🚀 Project Structure
+## Scripts
 
-Inside of your Astro project, you'll see the following folders and files:
+| Script | What it does |
+|--------|--------------|
+| `bun run dev` | Astro dev server with HMR |
+| `bun run build` | Static production build to `dist/` |
+| `bun run preview` | Serve the built `dist/` locally |
+| `bun run lint` | Biome lint + `astro check` type-check |
+| `bun run format` | Biome format .ts/.tsx/.js/.json + Prettier on .astro |
+| `bun run check` | CI-safe: lint + type-check, fails on warnings |
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+## Project rules (enforced by review)
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+- **Dark mode only.** No light/dark toggle. Baseline background is `zinc-950`.
+- **Default Tailwind scale only.** Do NOT use arbitrary values like `pt-[50px]`
+  or `bg-[#ff00ff]`. First violation in PR review is rejected.
+- **Single package manager.** `bun.lock` is committed; other lockfiles are removed.
+- **R3F Canvas uses `client:only="react"`** (added in Phase 4).
+- **GSAP via `useGSAP()` only** (added in Phase 6).
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `bun install`             | Installs dependencies                            |
-| `bun dev`             | Starts local dev server at `localhost:4321`      |
-| `bun build`           | Build your production site to `./dist/`          |
-| `bun preview`         | Preview your build locally, before deploying     |
-| `bun astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `bun astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+See `AGENTS.md` / `CLAUDE.md` for the full locked stack table and hard rules.
+See `.planning/` for phase-by-phase planning artifacts.
