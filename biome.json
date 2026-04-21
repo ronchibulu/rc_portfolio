@@ -15,7 +15,15 @@
       "*.mjs",
       "*.json"
     ],
-    "ignore": ["**/*.astro", "dist/**", ".astro/**", "node_modules/**", "bun.lock", "bun.lockb"]
+    "ignore": [
+      "**/*.astro",
+      "dist/**",
+      ".astro/**",
+      "node_modules/**",
+      "bun.lock",
+      "bun.lockb",
+      "src/components/ui/**"
+    ]
   },
   "organizeImports": { "enabled": true },
   "linter": {
