@@ -1,19 +1,9 @@
 /**
- * Phase 6 — ScrollNarrative.tsx
+ * Phase 6 / 12 — ScrollNarrative.tsx
  *
  * Pure scroll-orchestration island mounted via client:only="react" in index.astro.
- * Owns:
- *  - Hero text fade-out (0%→25% scroll) so camera fly-in takes visual dominance
- *  - Tagline fade-in/out scrub timeline (mid-scroll)
- *  - Blackout overlay fade-in (70%→100%) — "entering the monitor" illusion
- *  - Hard-cut $activeSection update on pin exit
- * No DOM output — returns null.
- *
- * Rules:
- *  - useGSAP() only — no raw useEffect for GSAP (AGENTS.md hard rule, Pitfall §2)
- *  - Waits for $sceneReady before creating ScrollTrigger (model must load first)
- *  - Reduced-motion guard: skip all ScrollTrigger when prefers-reduced-motion: reduce
- *  - No Drei <ScrollControls> — GSAP ScrollTrigger is the sole scroll authority
+ * Owns hero/scroll-cue fade, tagline scrub, blackout, and the $activeSection
+ * flip at the end of #post-flyin-pin. Returns null.
  */
 
 import { $activeSection, $sceneReady } from '@/stores';
@@ -32,27 +22,44 @@ export default function ScrollNarrative() {
       if (!sceneReady) return;
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
+      // DOM tweens (tagline/blackout/heroFade) can't share the camera's
+      // useFrame lerp, so we use GSAP's numeric scrub for inertia. 0.4 keeps
+      // them visually close to the camera glide without feeling laggy.
+      // Short-window tweens (scroll-cue fade) stay on scrub:true.
+      const SCRUB = 0.4;
+
       const scrubConfig = {
         trigger: '#scene-scroll-pin',
         start: 'top top',
         end: 'bottom top',
-        scrub: true,
+        scrub: SCRUB,
       };
 
-      // ------------------------------------------------------------------
-      // Hero text + scroll cue fade out early (0%→25%).
-      // Camera fly-in takes visual dominance after the text disappears.
-      // ------------------------------------------------------------------
-      const heroTl = gsap.timeline({ scrollTrigger: scrubConfig });
-      heroTl.to('#hero-text-content', { opacity: 0, ease: 'power1.in', duration: 0.25 }, 0);
-      heroTl.to('#scroll-cue', { opacity: 0, duration: 0.1 }, 0);
+      const heroFadeTween = gsap.to('#hero-text-content', {
+        opacity: 0,
+        ease: 'power1.in',
+        scrollTrigger: {
+          trigger: '#scene-scroll-pin',
+          start: 'top top',
+          end: '50% top',
+          scrub: SCRUB,
+        },
+      });
+      // biome-ignore lint/suspicious/noExplicitAny: diagnostic global only
+      (window as any).__heroFadeST = heroFadeTween.scrollTrigger;
 
-      // ------------------------------------------------------------------
-      // Tagline scrub timeline — fade in/out during mid-scroll fly-in.
-      // ------------------------------------------------------------------
+      gsap.to('#scroll-cue', {
+        opacity: 0,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '#scene-scroll-pin',
+          start: 'top top',
+          end: '10% top',
+          scrub: true,
+        },
+      });
+
       const taglineTl = gsap.timeline({ scrollTrigger: scrubConfig });
-
-      // Tagline 1: fade in 25%→45%, fade out 70%→82%
       taglineTl
         .fromTo(
           '#fly-tagline-1',
@@ -61,8 +68,6 @@ export default function ScrollNarrative() {
           0.25,
         )
         .to('#fly-tagline-1', { opacity: 0, ease: 'power1.out', duration: 0.12 }, 0.7);
-
-      // Tagline 2: fade in 35%→55%, fade out 75%→87%
       taglineTl
         .fromTo(
           '#fly-tagline-2',
@@ -72,10 +77,6 @@ export default function ScrollNarrative() {
         )
         .to('#fly-tagline-2', { opacity: 0, ease: 'power1.out', duration: 0.12 }, 0.75);
 
-      // ------------------------------------------------------------------
-      // Blackout overlay — fades in as camera approaches monitor face (70%→100%).
-      // Produces the "entering the monitor screen" → black illusion.
-      // ------------------------------------------------------------------
       const blackoutTl = gsap.timeline({ scrollTrigger: scrubConfig });
       blackoutTl.fromTo(
         '#fly-blackout',
@@ -84,25 +85,44 @@ export default function ScrollNarrative() {
         0.7,
       );
 
-      // ------------------------------------------------------------------
-      // Hard-cut trigger — when scroll pin exits forward, set activeSection.
-      // ------------------------------------------------------------------
-      ScrollTrigger.create({
-        trigger: '#scene-scroll-pin',
-        start: 'bottom top',
-        onEnter: () => {
-          $activeSection.set('os');
+      // Phase 12 — $activeSection flip across #post-flyin-pin.
+      //
+      // Dual-signal strategy:
+      //   1) onUpdate samples progress every tick, hysteresis prevents flicker
+      //   2) onLeave / onEnterBack are edge signals at the pin's end
+      // Either path can fire; whichever resolves first wins. Guards stop
+      // redundant sets by checking current store value.
+      const applyState = (progress: number) => {
+        const current = $activeSection.get();
+        if (progress >= 0.995) {
+          if (current !== 'os') $activeSection.set('os');
+        } else if (progress < 0.5) {
+          if (current !== 'hero') $activeSection.set('hero');
+        }
+      };
+
+      const st = ScrollTrigger.create({
+        trigger: '#post-flyin-pin',
+        start: 'top top',
+        end: 'bottom bottom',
+        onUpdate: (self) => applyState(self.progress),
+        onLeave: () => {
+          if ($activeSection.get() !== 'os') $activeSection.set('os');
         },
-        onLeaveBack: () => {
-          $activeSection.set('hero');
+        onEnterBack: () => {
+          // Scrolling up from past end — remain in 'os' until user crosses
+          // below the 0.5 hysteresis threshold; onUpdate handles that.
         },
       });
 
-      return () => {
-        heroTl.scrollTrigger?.kill();
-        taglineTl.scrollTrigger?.kill();
-        blackoutTl.scrollTrigger?.kill();
-      };
+      // Initial state sync. GSAP does NOT fire onEnter/onLeave for scroll
+      // positions that existed before a trigger was created ("just made,
+      // hasn't entered anything yet"). If the page loaded with scroll
+      // already past the pin's end — browser scroll restore, deep-link,
+      // reload mid-scroll — we'd otherwise be stuck in 'hero' with the text
+      // fully revealed and no OSScreen. Reading progress once after creation
+      // closes that gap.
+      applyState(st.progress);
     },
     { dependencies: [sceneReady] },
   );
