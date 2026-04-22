@@ -46,13 +46,14 @@ export const CAMERA_FOV = 40;
 export const CAMERA_NEAR = 0.1;
 export const CAMERA_FAR = 100;
 
-// Camera fly-in end: from the chair's perspective — in front of the monitor face.
-// In scene_2 the monitor faces lower-right (toward the chair). The screen center
-// is approx x≈0, y≈3.5, z≈-0.5. Camera ends where a seated person would be:
-// offset toward +X and +Z from the screen, at screen height, looking back at it.
-// FOV tapers to 22° so the monitor screen fills the canvas at the end.
-export const CAMERA_END_POSITION: [number, number, number] = [2.5, 3.5, 1.5];
-export const CAMERA_END_TARGET: [number, number, number] = [0.0, 3.5, -0.5];
+// Camera fly-in end: directly in front of the monitor from the right (chair-side).
+// X must be ≥ P2 X (no leftward backtrack in the curve).
+// The monitor screen normal points toward +X,+Z — camera sits on that side looking back.
+// End: x=5.5 (right of screen), y=3.5 (screen height), z=0.8 (in front of desk edge).
+// Target: screen face center — to the left and slightly back from camera end.
+// FOV tapers to 22°.
+export const CAMERA_END_POSITION: [number, number, number] = [5.5, 3.5, 0.8];
+export const CAMERA_END_TARGET: [number, number, number] = [-0.5, 3.5, -0.8];
 export const CAMERA_END_FOV = 22;
 
 // ---------------------------------------------------------------------------
@@ -70,13 +71,12 @@ const _endTarget = new THREE.Vector3(...CAMERA_END_TARGET);
 const _tmpPos = new THREE.Vector3();
 const _tmpTarget = new THREE.Vector3();
 
-// Cubic bezier control points — arc the camera around the monitor's right flank.
-// P0 = start [6,6,8], P3 = end [2.5,3.5,1.5]
-// P1: drop height fast, stay far-right — begins the rightward swing
-// P2: already at screen height, swung to right-front of monitor — lines up the final approach
-// The curve sweeps: upper-right-back → right-side at height → right-front at screen level
-const _cp1 = new THREE.Vector3(7.0, 3.5, 5.0); // stay right, drop fast to screen height
-const _cp2 = new THREE.Vector3(4.5, 3.5, 0.5); // right-front of monitor, screen height
+// Cubic bezier control points.
+// X values across P0→P1→P2→P3: 6 → 7 → 6.5 → 5.5 — monotonically right then settling.
+// Z values: 8 → 5 → 1.5 → 0.8 — continuously forward, no backtrack.
+// Y: 6 → 3.5 → 3.5 → 3.5 — drops to screen height at P1, stays level.
+const _cp1 = new THREE.Vector3(7.0, 3.5, 5.0); // swing right, drop to screen height
+const _cp2 = new THREE.Vector3(6.5, 3.5, 1.5); // settle right of monitor, at screen height
 
 // ---------------------------------------------------------------------------
 // SceneLoader — Suspense fallback rendered while .glb is in-flight.
