@@ -1,5 +1,5 @@
 /**
- * Phase 7 — OSScreen.tsx
+ * Phase 7/8/9 — OSScreen.tsx
  *
  * Retro OS desktop shell that appears after the camera fly-in blackout.
  * Mounted via client:only="react" in index.astro.
@@ -9,25 +9,25 @@
  *  - Returns null (hidden) when activeSection !== 'os'
  *  - When 'os': renders full-screen fixed overlay above canvas (z-20)
  *
+ * State:
+ *  - projectsOpen: boolean — whether the Projects folder window is open (Phase 8)
+ *  - selectedProject: Project | null — which project dialog is open (Phase 8)
+ *  - aboutOpen: boolean — whether About Me dialog is open (Phase 9)
+ *
  * Layout:
  *  - Fixed full-screen, z-20 (above canvas z-0, below dialogs z-50)
  *  - bg-zinc-950 + .os-bg-grid dot pattern + .os-scanlines pseudo-element
  *  - Retro title bar at top (h-10)
  *  - Desktop content area: centered folder icons
- *
- * Accessibility:
- *  - role="main" on desktop area
- *  - role="banner" on title bar
- *  - Each folder icon has accessible button semantics
- *
- * Phase 8/9: onOpenProjects / onOpenAboutMe will be lifted up to dialog state.
- * Phase 7: stubs only (console.log placeholders).
  */
 
+import type { Project } from '@/data/projects';
 import { $activeSection } from '@/stores';
 import { useStore } from '@nanostores/react';
 import { useEffect, useState } from 'react';
 import FolderIcon from './FolderIcon';
+import ProjectDialog from './ProjectDialog';
+import ProjectsOverlay from './ProjectsOverlay';
 
 /** Retro pixel-art clock display — HH:MM in 24h format */
 function OsClock() {
@@ -54,17 +54,20 @@ function OsClock() {
 
 export default function OSScreen() {
   const activeSection = useStore($activeSection);
+  const [projectsOpen, setProjectsOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  // Phase 9: aboutOpen wired here but dialog implemented in Phase 9
+  const [aboutOpen, setAboutOpen] = useState(false);
 
   if (activeSection !== 'os') return null;
 
   function handleOpenProjects() {
-    // Phase 8: open projects dialog
-    console.log('[OSScreen] open projects');
+    setProjectsOpen(true);
   }
 
   function handleOpenAboutMe() {
-    // Phase 9: open about me dialog
-    console.log('[OSScreen] open about me');
+    // Phase 9: about me timeline dialog
+    setAboutOpen(true);
   }
 
   return (
@@ -135,6 +138,39 @@ export default function OSScreen() {
         <span className="font-pixel text-xs text-zinc-700">2 ITEMS</span>
         <span className="font-pixel text-xs text-zinc-700">RC PORTFOLIO v1.0</span>
       </footer>
+
+      {/* ── Phase 8: Projects overlay (z-30) ── */}
+      <ProjectsOverlay
+        open={projectsOpen}
+        onClose={() => setProjectsOpen(false)}
+        onOpenProject={(project) => {
+          setProjectsOpen(false);
+          setSelectedProject(project);
+        }}
+      />
+
+      {/* ── Phase 8: Project detail dialog (z-50 via Shadcn Dialog portal) ── */}
+      <ProjectDialog project={selectedProject} onClose={() => setSelectedProject(null)} />
+
+      {/* ── Phase 9: About Me dialog placeholder ── */}
+      {aboutOpen && (
+        <dialog
+          open
+          className="fixed inset-0 z-50 m-0 flex w-full max-w-none items-end justify-center border-0 bg-transparent p-0 md:items-center"
+          aria-label="About Me"
+        >
+          <div className="w-full max-w-2xl rounded-t-2xl border border-zinc-700 bg-zinc-900 p-8 md:rounded-sm">
+            <p className="font-pixel text-xs text-zinc-500">About Me — Phase 9 coming soon.</p>
+            <button
+              type="button"
+              onClick={() => setAboutOpen(false)}
+              className="mt-4 font-pixel text-xs text-purple-400 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400"
+            >
+              Close
+            </button>
+          </div>
+        </dialog>
+      )}
     </div>
   );
 }
