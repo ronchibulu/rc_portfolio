@@ -70,14 +70,13 @@ const _endTarget = new THREE.Vector3(...CAMERA_END_TARGET);
 const _tmpPos = new THREE.Vector3();
 const _tmpTarget = new THREE.Vector3();
 
-// Quadratic bezier midpoint — camera drops to screen height early so the
-// approach feels horizontal rather than looking down from above.
-// X/Z: midpoint between start and end; Y: screen height (3.5) for level approach.
-const _midPos = new THREE.Vector3(
-  (CAMERA_POSITION[0] + CAMERA_END_POSITION[0]) / 2, // x midpoint
-  CAMERA_END_POSITION[1], // drop to screen Y immediately
-  (CAMERA_POSITION[2] + CAMERA_END_POSITION[2]) / 2, // z midpoint
-);
+// Cubic bezier control points — arc the camera around the monitor's right flank.
+// P0 = start [6,6,8], P3 = end [2.5,3.5,1.5]
+// P1: drop height fast, stay far-right — begins the rightward swing
+// P2: already at screen height, swung to right-front of monitor — lines up the final approach
+// The curve sweeps: upper-right-back → right-side at height → right-front at screen level
+const _cp1 = new THREE.Vector3(7.0, 3.5, 5.0); // stay right, drop fast to screen height
+const _cp2 = new THREE.Vector3(4.5, 3.5, 0.5); // right-front of monitor, screen height
 
 // ---------------------------------------------------------------------------
 // SceneLoader — Suspense fallback rendered while .glb is in-flight.
@@ -153,23 +152,18 @@ export default function GameSetupScene() {
     const t = cameraProgress.current.value;
     if (t <= 0) return;
 
-    // Quadratic bezier through a midpoint: camera drops to screen level quickly,
-    // then flies forward horizontally. This prevents the "looking down at an angle"
-    // artifact that linear lerp produces when the start is high and back.
-    //
-    // Midpoint: screen-level height, halfway between start and end in XZ.
-    // At t=0.5 the camera is already at screen height (y=3.5) and level.
-    const tSq = t * t;
-    const oneMinusT = 1 - t;
-    const oneMinusTSq = oneMinusT * oneMinusT;
-    const twoT = 2 * oneMinusT * t;
+    // Cubic bezier: P = (1-t)^3*P0 + 3*(1-t)^2*t*P1 + 3*(1-t)*t^2*P2 + t^3*P3
+    // Arcs the camera around the monitor's right flank — rightward orbital sweep.
+    const t2 = t * t;
+    const t3 = t2 * t;
+    const mt = 1 - t;
+    const mt2 = mt * mt;
+    const mt3 = mt2 * mt;
 
-    // Bezier: P = (1-t)^2 * P0 + 2*(1-t)*t * P1 + t^2 * P2
-    // P0 = start, P1 = midpoint, P2 = end
     _tmpPos.set(
-      oneMinusTSq * _startPos.x + twoT * _midPos.x + tSq * _endPos.x,
-      oneMinusTSq * _startPos.y + twoT * _midPos.y + tSq * _endPos.y,
-      oneMinusTSq * _startPos.z + twoT * _midPos.z + tSq * _endPos.z,
+      mt3 * _startPos.x + 3 * mt2 * t * _cp1.x + 3 * mt * t2 * _cp2.x + t3 * _endPos.x,
+      mt3 * _startPos.y + 3 * mt2 * t * _cp1.y + 3 * mt * t2 * _cp2.y + t3 * _endPos.y,
+      mt3 * _startPos.z + 3 * mt2 * t * _cp1.z + 3 * mt * t2 * _cp2.z + t3 * _endPos.z,
     );
 
     // Target lerps straight from start to end (no bezier needed for lookAt).
