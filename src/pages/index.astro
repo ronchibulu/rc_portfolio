@@ -16,6 +16,7 @@
  */
 import ScrollNarrative from '@/components/canvas/ScrollNarrative';
 import SceneCanvas from '@/components/canvas/SceneCanvas';
+import OSScreen from '@/components/OSScreen';
 import Footer from '@/components/Footer.astro';
 import Header from '@/components/Header.astro';
 import HeroTyping from '@/components/HeroTyping';
@@ -38,6 +39,21 @@ const hero = {
   <div class="pointer-events-none fixed inset-0 z-0" aria-hidden="true">
     <SceneCanvas client:only="react" heroViewId="hero-canvas-view" />
   </div>
+
+  {/*
+    * Drei View tracking div — SEPARATE sibling to the canvas container.
+    * Must NOT be an ancestor/descendant of the <canvas> element; Drei's
+    * IntersectionObserver uses the canvas as a measurement root and breaks
+    * when the track element is inside the canvas container.
+    *
+    * fixed inset-0 ensures getBoundingClientRect() always returns the full
+    * viewport rect regardless of scroll position. The old placement
+    * (absolute inset-0 inside sticky #hero) caused Drei's scissor to shrink
+    * and drift upward once the sticky pin released (parent bottom < hero height).
+    *
+    * z-[-1] puts it behind the canvas layer so it never intercepts paint.
+    */}
+  <div id="hero-canvas-view" class="pointer-events-none fixed inset-0 z-[-1]" aria-hidden="true"></div>
 
   {/* ===== SCROLL NARRATIVE (Phase 6) ===== */}
   {/*
@@ -69,10 +85,11 @@ const hero = {
         aria-label="Hero"
       >
         {/*
-          * Phase 5 — View tracking region covers the full hero section.
-          * The 3D scene fills the entire hero viewport; text overlays on top.
+          * Phase 5 — The Drei View tracking region is the canvas container
+          * div (fixed inset-0, id="hero-canvas-view") defined above.
+          * No separate tracking div is needed here; the fixed container
+          * always reports the full viewport rect to Drei's scissor.
           */}
-        <div id="hero-canvas-view" class="absolute inset-0 pointer-events-none" aria-hidden="true" />
 
         {/* ── Hero text — fades out early in scroll (ScrollNarrative targets #hero-text-content) ── */}
         <div id="hero-text-content" class="relative z-10 w-full px-4 py-16 sm:px-6 md:py-24 lg:px-12 lg:py-32">
@@ -144,15 +161,14 @@ const hero = {
     </div>
     {/* ── End #scene-scroll-pin ── */}
 
-    {/* =============== PROJECTS — Phase 7 OS Shell =============== */}
-    <section
-      id="projects"
-      class="relative z-10 flex min-h-dvh scroll-mt-16 items-center justify-center px-4 sm:px-6 lg:px-12"
-    >
-      <p class="text-center font-pixel text-sm text-zinc-500">
-        Projects — arriving in Phase 7.
-      </p>
-    </section>
+    {/* =============== OS SCREEN — Phase 7 =============== */}
+    {/*
+      * Fixed overlay controlled by $activeSection nanostore.
+      * Appears when camera fly-in completes ($activeSection === 'os').
+      * #projects sentinel preserves nav anchor scroll target.
+      */}
+    <div id="projects" class="h-0 overflow-hidden" aria-hidden="true" />
+    <OSScreen client:only="react" />
 
     {/* =============== ABOUT — Phase 9 Timeline =============== */}
     <section
