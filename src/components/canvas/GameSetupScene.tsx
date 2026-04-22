@@ -46,15 +46,14 @@ export const CAMERA_FOV = 40;
 export const CAMERA_NEAR = 0.1;
 export const CAMERA_FAR = 100;
 
-// Camera fly-in end: directly in front of the monitor screen face, perfectly horizontal.
-// The monitor screen faces +Z; camera approaches along +Z axis at screen center height.
-// x=0.3  matches screen center X
-// y=3.5  matches screen center Y (horizontal approach — not looking up or down)
-// z=0.8  in front of the screen face; target z=-0.5 (center of the screen panel)
-// FOV tapers to 20° so the screen fills the canvas at the end.
-export const CAMERA_END_POSITION: [number, number, number] = [0.3, 3.5, 0.8];
-export const CAMERA_END_TARGET: [number, number, number] = [0.3, 3.5, -0.5];
-export const CAMERA_END_FOV = 20;
+// Camera fly-in end: from the chair's perspective — in front of the monitor face.
+// In scene_2 the monitor faces lower-right (toward the chair). The screen center
+// is approx x≈0, y≈3.5, z≈-0.5. Camera ends where a seated person would be:
+// offset toward +X and +Z from the screen, at screen height, looking back at it.
+// FOV tapers to 22° so the monitor screen fills the canvas at the end.
+export const CAMERA_END_POSITION: [number, number, number] = [2.5, 3.5, 1.5];
+export const CAMERA_END_TARGET: [number, number, number] = [0.0, 3.5, -0.5];
+export const CAMERA_END_FOV = 22;
 
 // ---------------------------------------------------------------------------
 // Module-level preload — fires before any component renders.
