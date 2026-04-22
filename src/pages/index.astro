@@ -14,11 +14,14 @@
  *   section#hero       — sticky top-0 h-dvh, stays fixed while outer scrolls.
  *   At 100% scroll the pin releases and #projects snaps into view (hard cut).
  */
+import CenterTextReveal from '@/components/CenterTextReveal';
 import ScrollNarrative from '@/components/canvas/ScrollNarrative';
 import SceneCanvas from '@/components/canvas/SceneCanvas';
 import GPUDetector from '@/components/GPUDetector';
 import HeroFallback from '@/components/HeroFallback';
+import NavTransition from '@/components/NavTransition';
 import OSScreen from '@/components/OSScreen';
+import PageIntro from '@/components/PageIntro';
 import Footer from '@/components/Footer.astro';
 import Header from '@/components/Header.astro';
 import HeroTyping from '@/components/HeroTyping';
@@ -35,6 +38,48 @@ const hero = {
   {/* ===== GPU TIER DETECTION (Phase 10) ===== */}
   {/* Runs detect-gpu on mount, sets $gpuTier nanostore. Returns null. */}
   <GPUDetector client:only="react" />
+
+  {/*
+    * SSR-rendered boot cover — paints black over everything (including the
+    * sticky Header z-40 and OSScreen z-50) before any JS runs. Without this,
+    * the header flashes for one frame because <PageIntro> is client:only and
+    * therefore has zero SSR output; the browser paints the hero+header at
+    * initial HTML commit, then React hydrates and covers the viewport. This
+    * div closes that gap. PageIntro removes it in a useLayoutEffect on mount
+    * — i.e. after React's own overlay is committed but before the browser
+    * paints — so the swap is seamless.
+    *
+    * Inline style used for zIndex because project rule forbids Tailwind
+    * arbitrary values (z-[60]).
+    */}
+  <div
+    id="page-intro-boot"
+    aria-hidden="true"
+    style="position:fixed;inset:0;z-index:60;background:#000"
+  ></div>
+
+  {/* ===== BOOT OVERLAY — loading gate + pixel reveal ===== */}
+  {/*
+    * Full-viewport overlay (zIndex 60) that covers header, canvas, hero and
+    * OS screen until:
+    *   1. the 3D scene finishes loading (shows LOADING x% during this phase), then
+    *   2. the PixelReveal dissolve animation completes.
+    * During both phases the body scroll is locked, so the camera fly-in
+    * never plays against a partially loaded scene. ScrollTrigger.refresh()
+    * fires once after unlock so pinned measurements account for the
+    * now-scrollable document.
+    */}
+  <PageIntro client:only="react" />
+
+  {/* ===== NAV TRANSITION — pixel cover/reveal on header anchor clicks ===== */}
+  {/*
+    * Intercepts clicks on header anchors (#projects, #about, #contact, and
+    * the brand "/" link). Runs a chunky pixel-cover animation, jumps scroll
+    * to the target anchor, then plays the reverse pixel-reveal — so every
+    * nav hop feels like an 8-bit screen wipe. zIndex 70 in the overlay so
+    * it sits above PageIntro (60), OSScreen (50), and Header (40).
+    */}
+  <NavTransition client:only="react" />
 
   {/* ===== CANVAS LAYER (Phase 4/5/10) ===== */}
   {/*
@@ -60,7 +105,7 @@ const hero = {
     *
     * z-[-1] puts it behind the canvas layer so it never intercepts paint.
     */}
-  <div id="hero-canvas-view" class="pointer-events-none fixed inset-0 z-[-1]" aria-hidden="true"></div>
+  <div id="hero-canvas-view" class="pointer-events-none fixed right-0 inset-y-0 z-[-1] w-full" aria-hidden="true"></div>
 
   {/* ===== SCROLL NARRATIVE (Phase 6) ===== */}
   {/*
@@ -72,7 +117,7 @@ const hero = {
 
   <Header />
 
-  <main>
+  <main class="-mt-16">
     {/* ===== HERO FALLBACK (Phase 10) ===== */}
     {/* Shown instead of scroll narrative on low-tier GPU / mobile. Returns null on tier 2/3. */}
     <HeroFallback client:only="react" />
@@ -80,11 +125,13 @@ const hero = {
     {/* =============== SCROLL PIN WRAPPER (Phase 6) =============== */}
     {/*
       * Outer div is the ScrollTrigger trigger (#scene-scroll-pin).
-      * min-h-[200dvh] gives the camera fly-in its scroll travel range (~1 viewport).
+      * min-h-[300dvh] gives the camera fly-in ~2 viewports of scroll travel —
+      * longer than the original 200dvh so the fly-in reads cinematically
+      * instead of blasting past the scene in a single page flick.
       * 100dvh not 100vh (AGENTS.md hard rule).
       * z-10 so hero text sits above the fixed canvas (z-0).
       */}
-    <div id="scene-scroll-pin" class="relative z-10 min-h-[200dvh]">
+    <div id="scene-scroll-pin" class="relative z-10 min-h-[300dvh]">
       {/*
         * Sticky inner — stays at viewport top while outer div scrolls.
         * h-dvh = exactly one dynamic viewport height (AGENTS.md hard rule).
@@ -103,8 +150,14 @@ const hero = {
           */}
 
         {/* ── Hero text — fades out early in scroll (ScrollNarrative targets #hero-text-content) ── */}
-        <div id="hero-text-content" class="relative z-10 w-full px-4 py-16 sm:px-6 md:py-24 lg:px-12 lg:py-32">
-          <div class="mx-auto max-w-7xl">
+        {/*
+          * Text column sits in the left portion of the viewport. The 3D
+          * gaming setup renders offset to the right (SCENE_X_OFFSET in
+          * GameSetupScene.tsx) so the desk + monitor live in the right
+          * portion and no longer overlap the "Hi, I'm Ronald." text.
+          */}
+        <div id="hero-text-content" class="relative mx-auto z-10 max-w-7xl w-full px-4 py-16 sm:px-6 md:py-24 lg:px-12 lg:py-32">
+          <div class="max-w-xl">
             <HeroTyping
               client:only="react"
               name={hero.name}
@@ -114,13 +167,13 @@ const hero = {
             {/* Static fallback for no-JS / pre-hydration (HERO-001) */}
             <noscript>
               <div class="flex flex-col gap-4 md:gap-6">
-                <div class="font-pixel text-3xl leading-tight text-zinc-100 sm:text-4xl md:text-5xl lg:text-6xl">
+                <div class="font-pixel text-xl leading-tight text-zinc-100 sm:text-2xl md:text-3xl lg:text-4xl">
                   {hero.name}
                 </div>
-                <p class="font-pixel text-base leading-snug text-purple-400 sm:text-lg md:text-xl lg:text-2xl">
+                <p class="font-pixel text-sm leading-snug text-purple-400 sm:text-base md:text-lg lg:text-xl">
                   {hero.role}
                 </p>
-                <p class="text-sm leading-relaxed sm:text-base md:text-lg">
+                <p class="text-xs leading-relaxed sm:text-sm md:text-base">
                   <span class="font-pixel text-purple-400">&gt;_ </span>
                   <span class="font-sans text-zinc-500">Shipping </span>
                   <span class="font-sans text-yellow-400">pixel-sharp</span>
@@ -137,7 +190,7 @@ const hero = {
           * aria-hidden="true" — decorative overlays, content already in HeroTyping.
           * Reduced-motion: display:none via globals.css @media rule.
           */}
-        <div
+        <!-- <div
           id="fly-tagline-1"
           aria-hidden="true"
           class="absolute bottom-24 left-0 right-0 z-20 px-4 text-center font-pixel text-xs text-purple-400 opacity-0 sm:px-6 sm:text-sm lg:px-12 lg:text-base"
@@ -150,7 +203,7 @@ const hero = {
           class="absolute bottom-14 left-0 right-0 z-20 px-4 text-center font-pixel text-xs text-zinc-500 opacity-0 sm:px-6 sm:text-sm lg:px-12"
         >
           5 years shipping production-grade frontends
-        </div>
+        </div> -->
 
         {/* Scroll cue — anchored bottom-center, bobs via .animate-scrollbob */}
         <a
@@ -161,45 +214,121 @@ const hero = {
         >
           ▼
         </a>
-
-        {/* Blackout overlay — fades from transparent to black as camera enters monitor (Phase 6) */}
-        <div
-          id="fly-blackout"
-          aria-hidden="true"
-          class="pointer-events-none absolute inset-0 z-40 bg-black opacity-0"
-        />
       </section>
     </div>
     {/* ── End #scene-scroll-pin ── */}
 
+    {/*
+     * Blackout overlay — fades transparent → black as camera enters monitor (Phase 6).
+     *
+     * Fixed inset-0 so it covers the ENTIRE viewport instead of being clipped to
+     * the sticky hero. DOM-placed between #scene-scroll-pin and #post-flyin-pin
+     * so (with matching z-10) the paint order is:
+     *   canvas (z-0) → scene-scroll-pin → blackout → post-flyin-pin (text).
+     * Result: the blackout covers the 3D scene everywhere while leaving the
+     * text reveal above it visible. Once the fly-in scrub hits progress 1 the
+     * ScrollTrigger locks final state, so the backdrop stays black through the
+     * post-flyin typing section. Scrubs in reverse on scroll-up.
+     */}
+    <div
+      id="fly-blackout"
+      aria-hidden="true"
+      class="pointer-events-none fixed inset-0 z-10 bg-black opacity-0"
+    />
+
+    {/* =============== POST-FLYIN TEXT REVEAL — Phase 12 =============== */}
+    {/*
+      * After the camera fly-in blackout completes, this pin scrolls the user
+      * through a four-line tagline reveal before the OSScreen activates.
+      *
+      * Why a separate pin instead of extending #scene-scroll-pin:
+      *   The fly-in's ScrollTrigger uses `end: 'bottom top'` on #scene-scroll-pin.
+      *   Lengthening that pin would stretch the camera animation out. A new
+      *   sibling pin keeps the fly-in timing untouched.
+      *
+      * Height: 250dvh (~1.5 viewports of scroll) — enough for the four typed
+      * lines + hold-beat at the end without feeling draggy.
+      *
+      * The pin itself is transparent (no bg-black) so while it emerges from
+      * viewport bottom during the tail of the fly-in, the 3D canvas stays
+      * visible behind it — no black "text section" seam cuts into the scene.
+      * The full-viewport #fly-blackout (sibling above) handles backdrop fade:
+      * it hits opacity 1 at the end of the fly-in and stays locked, so by the
+      * time this pin takes over the viewport the backdrop is already black.
+      *
+      * OSScreen activation: handled by ScrollNarrative via onEnter on this
+      * pin's `bottom top`. See ScrollNarrative.tsx.
+      *
+      * Height bumped from 250dvh → 400dvh so after the typing completes the
+      * user gets a clearly readable hold-beat with the full quote before
+      * #post-flyin-pin releases and OSScreen takes over. Pairs with a larger
+      * TAIL_HOLD ratio in CenterTextReveal.tsx so the extra scroll distance
+      * biases toward "text sits complete on screen" instead of stretching
+      * typing itself.
+      */}
+    <div id="post-flyin-pin" class="relative z-10 min-h-[400dvh]">
+      <section
+        id="post-flyin-stage"
+        class="sticky top-0 flex h-dvh items-center justify-center overflow-hidden"
+        aria-label="Role and experience summary"
+      >
+        <CenterTextReveal client:only="react" />
+      </section>
+    </div>
+    {/* ── End #post-flyin-pin ── */}
+
+    {/* =============== SCROLL HEADROOM — Phase 12 fix =============== */}
+    {/*
+      * One viewport of black filler AFTER the post-flyin pin.
+      *
+      * Why this exists: ScrollTrigger's onEnter fires when the scroll position
+      * CROSSES the trigger point — it needs the user to be able to scroll
+      * PAST `#post-flyin-pin`'s `bottom bottom`. Without this filler, the
+      * trigger point coincides with the document's maximum scroll position
+      * (sentinels are h-0 and the Footer is short), which means scroll can
+      * only *reach* the trigger, never *pass* it, and OSScreen never
+      * activates.
+      *
+      * Once OSScreen activates, its useEffect locks body overflow so this
+      * filler becomes inert — the user can only exit via wheel-up (handled
+      * inside OSScreen). Background is kept bg-black to continue the blackout
+      * seamlessly from the fly-in.
+      *
+      * aria-hidden: decorative filler, no content.
+      */}
+    <div
+      aria-hidden="true"
+      class="bg-black"
+      style="height: 100dvh;"
+    />
+
     {/* =============== OS SCREEN — Phase 7 =============== */}
     {/*
       * Fixed overlay controlled by $activeSection nanostore.
-      * Appears when camera fly-in completes ($activeSection === 'os').
-      * #projects sentinel preserves nav anchor scroll target.
+      * Appears when the post-flyin pin exits ($activeSection === 'os') and
+      * takes over the entire viewport (z-50, above Header z-40). Phase 12
+      * adds a PixelReveal canvas intro inside OSScreen that plays once on
+      * first activation.
+      *
+      * #projects sentinel preserves nav anchor scroll behaviour — clicking
+      * "Projects" in the header scrolls the page to the end of the post-flyin
+      * pin, which triggers the 'os' activeSection and reveals OSScreen.
+      *
+      * #about sentinel is here so the header's "About" link also lands at the
+      * end of the post-flyin pin → OSScreen → user opens the About Me folder.
+      *
+      * About Me / Contact content is delivered inside OSScreen (AboutDialog)
+      * and the site Footer respectively — no separate stub sections in flow.
       */}
     <div id="projects" class="h-0 overflow-hidden" aria-hidden="true" />
+    <div id="about" class="h-0 overflow-hidden" aria-hidden="true" />
+    {/* #contact sentinel — nav "Contact" link resolves here; user then scrolls
+        past the scene pin into OSScreen, where the real contact info lives in
+        the site Footer (visible below OSScreen when the user scrolls up out of
+        it, and accessible via tab order). Keeping the anchor avoids 404-style
+        broken-link feedback from the header. */}
+    <div id="contact" class="h-0 overflow-hidden" aria-hidden="true" />
     <OSScreen client:only="react" />
-
-    {/* =============== ABOUT — Phase 9 Timeline =============== */}
-    <section
-      id="about"
-      class="relative z-10 flex min-h-dvh scroll-mt-16 items-center justify-center px-4 sm:px-6 lg:px-12"
-    >
-      <p class="text-center font-pixel text-sm text-zinc-500">
-        About Me — arriving in Phase 9.
-      </p>
-    </section>
-
-    {/* =============== CONTACT — footer is contact =============== */}
-    <section
-      id="contact"
-      class="relative z-10 flex min-h-dvh scroll-mt-16 items-center justify-center px-4 sm:px-6 lg:px-12"
-    >
-      <p class="text-center font-pixel text-sm text-zinc-500">
-        Contact — see footer below.
-      </p>
-    </section>
   </main>
 
   <Footer />

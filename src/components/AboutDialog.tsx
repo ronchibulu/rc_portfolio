@@ -1,33 +1,40 @@
 /**
  * Phase 9 — AboutDialog.tsx
  *
- * About Me dialog with scroll-animated vertical timeline.
- * Mounted inside OSScreen (client:only="react").
+ * About Me window. Offers two presentations of the employment history,
+ * selectable via a toggle in the top-right of the window title bar:
+ *
+ *  - SIMPLE    — the original text-only scrollable vertical timeline,
+ *                best for quick scanning and screen readers.
+ *  - ANIMATED  — a full-bleed slideshow over a Tron-style RetroGrid
+ *                background. Each job is a slide; scroll drives
+ *                progression with a per-transition lock so one gesture
+ *                moves exactly one slide. See AnimatedAboutTimeline.tsx.
  *
  * Layout:
- *  - Shadcn Dialog (centered md+, bottom-sheet max-md via CSS overrides)
- *  - Scrollable content area with vertical timeline
- *  - Two company blocks: UDS and Hypthon (3 grouped titles)
- *  - Each timeline entry animates in on scroll (Motion v12 InView)
- *  - prefers-reduced-motion: entries appear immediately, no animation
+ *  - Shared Window container (red/yellow/green traffic lights)
+ *  - Mode toggle wired through Window's `headerRight` slot
+ *  - Scrollable content area with vertical timeline (simple mode)
+ *  - Or animated slideshow (animated mode)
  *
  * Requirements: ABOUT-001, ABOUT-002, ABOUT-003, ABOUT-004, ABOUT-005, ABOUT-006
  */
 
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import AnimatedAboutTimeline from '@/components/AnimatedAboutTimeline';
+import Window from '@/components/Window';
 import { TIMELINE } from '@/data/timeline';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
+import { useState } from 'react';
+
+type AboutMode = 'simple' | 'animated';
 
 interface AboutDialogProps {
   open: boolean;
+  minimized: boolean;
+  maximized: boolean;
   onClose: () => void;
+  onMinimize: () => void;
+  onToggleMaximize: () => void;
 }
 
 /** Animated timeline entry — fades + slides in when scrolled into view */
@@ -116,53 +123,108 @@ function CompanyBlock({
   );
 }
 
-export default function AboutDialog({ open, onClose }: AboutDialogProps) {
+/** Segmented two-way toggle used in the title-bar headerRight slot. */
+function ModeToggle({
+  mode,
+  onChange,
+}: {
+  mode: AboutMode;
+  onChange: (m: AboutMode) => void;
+}) {
+  return (
+    <div
+      role="tablist"
+      aria-label="About view mode"
+      className="flex items-center overflow-hidden rounded-sm border border-zinc-700 bg-zinc-900"
+    >
+      <ModeButton
+        selected={mode === 'simple'}
+        label="SIMPLE"
+        onClick={() => onChange('simple')}
+      />
+      <ModeButton
+        selected={mode === 'animated'}
+        label="ANIMATED"
+        onClick={() => onChange('animated')}
+      />
+    </div>
+  );
+}
+
+function ModeButton({
+  selected,
+  label,
+  onClick,
+}: {
+  selected: boolean;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      role="tab"
+      aria-selected={selected}
+      onClick={onClick}
+      className={[
+        'px-2 py-1 font-pixel text-xs transition-colors',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400',
+        selected
+          ? 'bg-purple-400 text-zinc-950'
+          : 'text-zinc-400 hover:text-zinc-100',
+      ].join(' ')}
+    >
+      {label}
+    </button>
+  );
+}
+
+export default function AboutDialog({
+  open,
+  minimized,
+  maximized,
+  onClose,
+  onMinimize,
+  onToggleMaximize,
+}: AboutDialogProps) {
   const prefersReducedMotion = useReducedMotion() ?? false;
+  const [mode, setMode] = useState<AboutMode>('simple');
+
+  /** Changing to animated mode auto-maximizes the window so the 3D scene
+   *  gets the full canvas it needs. We don't forcibly un-maximize when
+   *  switching back to simple — the user can restore with the green
+   *  traffic light if they want the smaller window again. */
+  const handleModeChange = (next: AboutMode) => {
+    setMode(next);
+    if (next === 'animated' && !maximized) {
+      onToggleMaximize();
+    }
+  };
+
+  if (!open) return null;
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(o) => {
-        if (!o) onClose();
-      }}
+    <Window
+      title="ABOUT ME"
+      ariaLabel="About Me timeline"
+      size="md"
+      z={40}
+      minimized={minimized}
+      maximized={maximized}
+      onClose={onClose}
+      onMinimize={onMinimize}
+      onToggleMaximize={onToggleMaximize}
+      headerRight={<ModeToggle mode={mode} onChange={handleModeChange} />}
+      // Animated mode needs the full canvas for the 3D scene — lock the
+      // maximize affordance so the user can't shrink out from under it.
+      disableToggleMaximize={mode === 'animated'}
     >
-      <DialogContent
-        className={[
-          // Base styling
-          'flex flex-col gap-0 overflow-hidden border border-zinc-700 bg-zinc-900 p-0 shadow-2xl',
-          // Desktop sizing
-          'sm:max-w-2xl',
-          // Mobile bottom sheet override
-          'max-md:fixed max-md:inset-x-0 max-md:bottom-0 max-md:top-auto',
-          'max-md:h-[90dvh] max-md:max-w-none',
-          'max-md:translate-x-0 max-md:translate-y-0',
-          'max-md:rounded-none max-md:rounded-t-2xl',
-          'max-md:data-[state=open]:slide-in-from-bottom',
-          'max-md:data-[state=closed]:slide-out-to-bottom',
-        ].join(' ')}
-        aria-describedby="about-timeline-desc"
-      >
-        {/* Title Bar */}
-        <DialogHeader className="flex shrink-0 flex-row items-center justify-between border-b border-zinc-700 bg-zinc-800 px-4 py-2">
-          <div className="flex items-center gap-3">
-            {/* Retro window traffic lights */}
-            <div className="flex gap-1.5" aria-hidden="true">
-              <span className="inline-block h-3 w-3 rounded-full bg-red-500 opacity-80" />
-              <span className="inline-block h-3 w-3 rounded-full bg-yellow-400 opacity-70" />
-              <span className="inline-block h-3 w-3 rounded-full bg-green-500 opacity-70" />
-            </div>
-            <DialogTitle className="font-pixel text-xs text-zinc-100">ABOUT ME</DialogTitle>
-          </div>
-          <DialogClose
-            className="inline-flex h-7 w-7 items-center justify-center rounded-sm font-pixel text-xs text-zinc-400 transition-colors hover:bg-zinc-700 hover:text-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400"
-            aria-label="Close About Me dialog"
-          >
-            ×
-          </DialogClose>
-        </DialogHeader>
-
-        {/* Scrollable timeline content */}
-        <ScrollArea className="flex-1">
+      {mode === 'animated' ? (
+        <AnimatedAboutTimeline />
+      ) : (
+        // Scrollable timeline content — native scroll container with min-h-0
+        // so it can shrink inside the flex-col parent and activate overflow-y.
+        <div data-os-scrollable className="min-h-0 flex-1 overflow-y-auto">
           <div id="about-timeline-desc" className="flex flex-col gap-8 p-4 md:p-6">
             {/* Intro */}
             <AnimatePresence>
@@ -172,8 +234,8 @@ export default function AboutDialog({ open, onClose }: AboutDialogProps) {
                 transition={{ duration: 0.3, delay: 0.1 }}
                 className="font-pixel text-xs leading-relaxed text-purple-400"
               >
-                &gt;_ Hello! I'm Ronald Cheng — a Senior Full-Stack Developer with 5 years shipping
-                production frontends and AI-powered products.
+                &gt;_ Hello! I'm Ronald Cheng — a Senior Full-Stack Developer with 5 years
+                shipping production frontends and AI-powered products.
               </motion.p>
             </AnimatePresence>
 
@@ -190,8 +252,8 @@ export default function AboutDialog({ open, onClose }: AboutDialogProps) {
               ))}
             </div>
           </div>
-        </ScrollArea>
-      </DialogContent>
-    </Dialog>
+        </div>
+      )}
+    </Window>
   );
 }

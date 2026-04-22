@@ -214,6 +214,22 @@ html {
 }
 
 /*
+ * Phase 12 — CenterTextReveal words.
+ *
+ * Belt-and-braces fallback for prefers-reduced-motion. CenterTextReveal
+ * already skips rendering the `opacity-0` class when matchMedia reports
+ * reduce, but an OS-level preference change after mount would strand the
+ * words invisible. Forcing opacity:1 here keeps them legible no matter
+ * what the JS gate decided.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .post-flyin-word {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/*
  * Typing caret blink — 1.0s infinite opacity 1→0→1.
  * Consumed by src/components/HeroTyping.tsx (Plan 02) on the resting caret.
  * Per 02-UI-SPEC §Typing Animation "Caret".
@@ -236,6 +252,32 @@ html {
 }
 
 /*
+ * Phase 8 — PixelGallery stepped crossfade.
+ *
+ * Applied to the main viewer <img> in PixelGallery whenever the active
+ * image changes (React re-mounts via `key={swapId}` so the animation
+ * replays). `steps(4, end)` produces 4 discrete opacity frames — reads
+ * as an 8-bit dither-fade instead of a smooth CSS tween, matching the
+ * retro pixel aesthetic.
+ *
+ * The global reduced-motion rule in this file already clamps
+ * `animation-duration` to 0.01ms, so users who prefer reduced motion
+ * see the swap as an instant cut (no JS gate needed here).
+ */
+@keyframes pixel-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-pixel-fade {
+  animation: pixel-fade-in 180ms steps(4, end) forwards;
+}
+
+/*
  * Phase 7 — OS Screen Shell
  * Dot-grid and scanlines backgrounds for the retro OS desktop.
  */
@@ -246,11 +288,23 @@ html {
   background-size: 24px 24px;
 }
 
-/* Scanlines overlay pseudo-element carrier */
-.os-scanlines {
-  position: relative;
-}
-
+/*
+ * Scanlines overlay pseudo-element carrier.
+ *
+ * Do NOT set `position: relative` here. In the Tailwind v4 cascade, a plain
+ * `.os-scanlines { position: relative }` rule comes AFTER the utilities
+ * emitted by `@import "tailwindcss"` and overrides Tailwind's positioning
+ * utilities (e.g. `fixed`) on the same element. OSScreen's root is
+ * `fixed inset-0` — if this rule re-set position to relative, OSScreen
+ * collapsed into the document flow at the end of the page instead of
+ * covering the viewport.
+ *
+ * The carrier only needs to be a positioned element so the `::before`
+ * pseudo can anchor to it with `position: absolute; inset: 0`. Callers
+ * must supply the positioning themselves (via `fixed`, `absolute`,
+ * `relative`, or `sticky`). OSScreen's `fixed` on the same element
+ * satisfies that contract.
+ */
 .os-scanlines::before {
   content: '';
   position: absolute;

@@ -27,6 +27,10 @@ pnpm-debug.log*
 Thumbs.db
 
 # editor
-.vscode/*
-!.vscode/extensions.json
 .idea/
+
+# AI coding assistant
+.claude/
+.kilo/
+.planning/
+

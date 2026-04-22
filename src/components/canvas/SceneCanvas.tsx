@@ -89,7 +89,11 @@ export default function SceneCanvas({ heroViewId = 'hero-canvas-view' }: SceneCa
       gl={{
         antialias: true,
         alpha: true,
-        toneMapping: THREE.NoToneMapping,
+        // ACESFilmic with low exposure matches the Blender reference
+        // (desire_scene.png): deep blacks, subtle purple rolloff, no blown
+        // highlights. NoToneMapping was flooding the scene white.
+        toneMapping: THREE.ACESFilmicToneMapping,
+        toneMappingExposure: 0.9,
       }}
       performance={{ min: 0.5 }}
     >

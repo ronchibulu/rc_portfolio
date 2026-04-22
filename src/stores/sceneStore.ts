@@ -21,3 +21,21 @@ export const $sceneReady = atom<boolean>(false);
 
 /** Active section for cross-island routing. Set by ScrollNarrative in Phase 6. */
 export const $activeSection = atom<string>('hero');
+
+/**
+ * True while NavTransition is orchestrating a cover→scroll→reveal animation
+ * triggered by a header anchor click. OSScreen reads this to suppress its own
+ * PixelReveal intro when the nav transition is already handling the visual
+ * cover/reveal — otherwise both reveals would play simultaneously and stack.
+ */
+export const $navTransitioning = atom<boolean>(false);
+
+/**
+ * Pending window to auto-open once OSScreen activates.
+ * NavTransition sets this when the user clicks a header hash anchor
+ * (#projects → 'projects', #about → 'about', #contact → 'contact').
+ * OSScreen consumes the intent on activation, opens the matching window,
+ * and clears the store back to null.
+ */
+export type OsIntent = 'projects' | 'about' | 'contact' | null;
+export const $osIntent = atom<OsIntent>(null);

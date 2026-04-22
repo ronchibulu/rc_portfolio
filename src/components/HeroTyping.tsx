@@ -223,7 +223,7 @@ export default function HeroTyping({ name, role, tagline }: HeroTypingProps) {
 
       <div
         aria-hidden="true"
-        className="font-pixel text-3xl leading-tight text-zinc-100 sm:text-4xl md:text-5xl lg:text-6xl"
+        className="font-pixel text-xl leading-tight text-zinc-100 sm:text-2xl md:text-3xl lg:text-4xl"
       >
         {visibleName}
         {currentLine === 0 ? caretNode(false) : null}
@@ -231,13 +231,13 @@ export default function HeroTyping({ name, role, tagline }: HeroTypingProps) {
 
       <p
         aria-hidden="true"
-        className="font-pixel text-base leading-snug text-purple-400 sm:text-lg md:text-xl lg:text-2xl"
+        className="font-pixel text-sm leading-snug text-purple-400 sm:text-base md:text-lg lg:text-xl"
       >
         {visibleRole}
         {currentLine === 1 ? caretNode(false) : null}
       </p>
 
-      <p aria-hidden="true" className="text-sm leading-relaxed sm:text-base md:text-lg">
+      <p aria-hidden="true" className="text-xs leading-relaxed sm:text-sm md:text-base">
         {renderTagline(tagline, shown2)}
         {currentLine === 2 ? caretNode(false) : null}
         {isDone ? caretNode(true) : null}
