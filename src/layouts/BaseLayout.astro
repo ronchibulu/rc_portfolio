@@ -12,8 +12,8 @@ interface Props {
 }
 
 const {
-  title = 'Ronald Cheng — Senior Full-Stack Developer',
-  description = 'Portfolio of Ronald Cheng — Senior Full-Stack Developer specialising in frontend engineering and AI-powered applications. React, Next.js, Astro, Three.js, LangChain.',
+  title = 'Ronald Cheng — Senior Software Engineer and Full-Stack Developer',
+  description = 'Portfolio of Ronald Cheng — Senior Software Engineer and Full-Stack Developer specialising in full-stack development and AI-powered applications. React, Next.js, Astro, Three.js, LangChain.',
   ogImage = '/og-image.png',
 } = Astro.props;
 
@@ -40,7 +40,7 @@ const canonicalURL = Astro.site
     <meta property="og:description" content={description} />
     {canonicalURL && <meta property="og:url" content={canonicalURL} />}
     <meta property="og:image" content={ogImage} />
-    <meta property="og:image:alt" content="Ronald Cheng — Senior Full-Stack Developer portfolio" />
+    <meta property="og:image:alt" content="Ronald Cheng — Senior Software Engineer and Full-Stack Developer portfolio" />
     <meta property="og:locale" content="en_HK" />
 
     {/* Twitter/X Card */}

@@ -59,10 +59,10 @@ export default function FolderIcon({
       onClick={onClick}
       disabled={disabled}
       aria-label={ariaLabel ?? label}
-      className="folder-icon-btn group flex min-h-11 min-w-11 flex-col items-center gap-2 rounded-sm p-3 text-zinc-400 transition-transform duration-150 hover:scale-105 hover:text-purple-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black disabled:cursor-not-allowed disabled:opacity-40"
+      className="folder-icon-btn group flex min-h-11 w-full max-w-full min-w-11 flex-col items-center gap-2 rounded-sm p-3 text-zinc-400 transition-transform duration-150 hover:scale-105 hover:text-purple-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black disabled:cursor-not-allowed disabled:opacity-40"
     >
       <FolderSvg />
-      <span className="font-pixel text-xs leading-tight text-zinc-100 group-hover:text-purple-400">
+      <span className="block max-w-full break-words text-center font-pixel text-xs leading-tight text-zinc-100 group-hover:text-purple-400">
         {label}
       </span>
     </button>

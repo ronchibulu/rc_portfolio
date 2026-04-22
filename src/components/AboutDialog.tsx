@@ -234,8 +234,8 @@ export default function AboutDialog({
                 transition={{ duration: 0.3, delay: 0.1 }}
                 className="font-pixel text-xs leading-relaxed text-purple-400"
               >
-                &gt;_ Hello! I'm Ronald Cheng — a Senior Full-Stack Developer with 5 years
-                shipping production frontends and AI-powered products.
+                &gt;_ Hello! I'm Ronald Cheng — a Senior Software Engineer and Full-Stack Developer with 5 years
+                shipping production applications and AI-powered products.
               </motion.p>
             </AnimatePresence>
 

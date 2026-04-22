@@ -53,16 +53,21 @@ export default function ProjectsOverlay({
       onToggleMaximize={onToggleMaximize}
     >
       {/* Flex-wrap of 11 project folders — keeps source order but centers
-          every row (including the trailing 5th item of the last row) so the
-          last row doesn't read as "short" against a 6-column grid. Fixed
-          per-item width keeps columns visually aligned across rows. */}
-      <div className="overflow-y-auto p-4 md:p-6">
+          every row so the trailing tile doesn't read as "short". Two tiles
+          per row on mobile to prevent label overlap, three at sm:, then
+          wider per-item cells at md:/lg: for the full grid.
+          `flex-1 min-h-0` on the scroll container lets it honor Window's
+          max-h-[85dvh] and scroll when content overflows. */}
+      <div
+        data-os-scrollable
+        className="flex-1 min-h-0 overflow-y-auto p-4 md:p-6"
+      >
         <ul
-          className="flex list-none flex-wrap justify-center gap-4 p-0 md:gap-6"
+          className="grid list-none grid-cols-2 gap-4 p-0 sm:grid-cols-3 md:grid-cols-4 md:gap-6 lg:grid-cols-5"
           aria-label="Project folders"
         >
           {PROJECTS.map((project) => (
-            <li key={project.slug} className="flex w-28 justify-center md:w-32 lg:w-36">
+            <li key={project.slug} className="flex min-w-0 justify-center">
               <FolderIcon
                 label={project.name}
                 ariaLabel={`Open ${project.name} project`}

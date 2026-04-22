@@ -310,7 +310,7 @@ export default function OSScreen() {
         </div>
 
         {/* Center: decorative menu items */}
-        <nav aria-label="OS menu bar" className="hidden gap-6 sm:flex">
+        {/* <nav aria-label="OS menu bar" className="hidden gap-6 sm:flex">
           {['FILE', 'EDIT', 'VIEW', 'HELP'].map((item) => (
             <span
               key={item}
@@ -319,7 +319,7 @@ export default function OSScreen() {
               {item}
             </span>
           ))}
-        </nav>
+        </nav> */}
 
         {/* Right: status */}
         <div className="flex items-center gap-3">

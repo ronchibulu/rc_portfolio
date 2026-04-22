@@ -29,12 +29,12 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 
 const hero = {
   name: "Hi, I'm Ronald.",
-  role: 'Senior Full-Stack Developer',
-  tagline: 'Shipping pixel-sharp frontends with purpose.',
+  role: 'Senior Software Engineer and Full-Stack Developer',
+  tagline: 'Shipping pixel-sharp applications with purpose.',
 };
 ---
 
-<BaseLayout title="Ronald Cheng — Senior Full-Stack Developer">
+<BaseLayout>
   {/* ===== GPU TIER DETECTION (Phase 10) ===== */}
   {/* Runs detect-gpu on mount, sets $gpuTier nanostore. Returns null. */}
   <GPUDetector client:only="react" />

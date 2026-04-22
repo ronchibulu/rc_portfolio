@@ -54,7 +54,8 @@ export default function ProjectDialog({
       onToggleMaximize={onToggleMaximize}
     >
       <div
-        className="flex flex-1 flex-col gap-4 overflow-y-auto p-4 md:p-6"
+        data-os-scrollable
+        className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4 md:p-6"
         aria-describedby={`project-${project.slug}-desc`}
       >
         {hasImages && (

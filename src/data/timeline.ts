@@ -24,6 +24,23 @@ export interface CompanyBlock {
 
 export const TIMELINE: CompanyBlock[] = [
   {
+    company: "Pints AI",
+    periodRange: "Mar 2026 – Present",
+    entries: [
+      {
+        period: 'Mar 2026 – Present',
+        title: 'Senior Software Engineer',
+        highlights: [
+          "Developed the technical product end-to-end across frontend and backend.",
+          "Architected, implemented, and oversaw AI/ML model training pipelines and deployment workflows, including production-level release processes.",
+          "Designed and planned software architecture, wrote unit tests, and supported User Acceptance Testing (UAT) as required.",
+          "Assisted in project management and, where assigned, mentored/supervised team members and conducted code reviews.",
+          "Built and implemented AIOps for BEA, and developed an in-house AI solution platform to manage, build, and deploy AI agents at production scale.",
+        ],
+      },
+    ]
+  },
+  {
     company: 'Hypthon',
     periodRange: 'Apr 2022 – Dec 2025',
     entries: [

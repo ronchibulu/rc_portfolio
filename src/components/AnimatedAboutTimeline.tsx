@@ -182,12 +182,11 @@ export default function AnimatedAboutTimeline() {
 
       {/* 3D card stage. `perspective` here makes every child's translateZ
           render with depth distortion. Cards share one cameraZ so they
-          travel in lock-step. Bounded on the right (instead of padded)
-          so the card-centering math — `left: 50% + x: -50%` — lands in
-          the open area beside the SideTimeline overlay rather than
-          underneath it. */}
+          travel in lock-step. On mobile the SideTimeline is hidden so the
+          stage spans the full width (cards center in the viewport); on
+          md+ we reserve the right gutter for the timeline overlay. */}
       <div
-        className="absolute inset-y-0 left-0 right-24 md:right-40"
+        className="absolute inset-y-0 left-0 right-0 md:right-40"
         style={{
           perspective: `${PERSPECTIVE}px`,
           perspectiveOrigin: '50% 50%',
@@ -327,7 +326,9 @@ function SideTimeline({ activeIdx, onJump, reducedMotion }: SideTimelineProps) {
       aria-label="Job slide navigator"
       className={[
         'absolute right-3 top-1/2 -translate-y-1/2',
-        'flex flex-col gap-3',
+        // Hide the side progress on mobile so cards can use the full width.
+        'hidden md:flex',
+        'flex-col gap-3',
         'rounded-sm border border-zinc-700 bg-zinc-900/70 px-2 py-3 backdrop-blur-sm',
       ].join(' ')}
     >
