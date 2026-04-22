@@ -14,6 +14,7 @@ import tailwindcss from '@tailwindcss/vite';
 // without needing /static or /serverless subpaths.
 export default defineConfig({
   output: 'static',
+  site: 'https://ronaldcheng.dev', // Phase 11: canonical URL base (DEPLOY-003)
   adapter: vercel({}),
   integrations: [react()],
   vite: {
