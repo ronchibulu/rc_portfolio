@@ -46,11 +46,15 @@ export const CAMERA_FOV = 40;
 export const CAMERA_NEAR = 0.1;
 export const CAMERA_FAR = 100;
 
-// Camera fly-in end: very close to the monitor screen face, looking straight at it.
-// The monitor screen in the GLB is at approx x≈0.3, y≈3.4, z≈-1.5 (face forward).
-// Camera ends just in front: z≈0.8 gives a close frame; target is the screen face center.
-export const CAMERA_END_POSITION: [number, number, number] = [0.4, 3.5, 1.0];
-export const CAMERA_END_TARGET: [number, number, number] = [0.3, 3.35, -1.5];
+// Camera fly-in end: camera directly in front of the monitor screen, centered.
+// Position X/Y must equal target X/Y so the look direction is perfectly perpendicular
+// to the screen face — this centers the monitor in the viewport with no angular offset.
+// Monitor screen center: approx x≈0.3, y≈3.5, z≈-0.8 (front face).
+// Camera sits at same X/Y, pulled out to z≈0.6 — close enough to fill the frame.
+// FOV narrows to 18° at end so the screen fills the entire canvas.
+export const CAMERA_END_POSITION: [number, number, number] = [0.3, 3.5, 0.6];
+export const CAMERA_END_TARGET: [number, number, number] = [0.3, 3.5, -1.0];
+export const CAMERA_END_FOV = 18;
 
 // ---------------------------------------------------------------------------
 // Module-level preload — fires before any component renders.
@@ -146,6 +150,11 @@ export default function GameSetupScene() {
 
     cam.position.copy(_tmpPos);
     cam.lookAt(_tmpTarget);
+
+    // Narrow FOV as camera approaches the monitor — screen fills the frame at end.
+    const perspCam = cam as THREE.PerspectiveCamera;
+    perspCam.fov = CAMERA_FOV + (CAMERA_END_FOV - CAMERA_FOV) * t;
+    perspCam.updateProjectionMatrix();
   });
 
   return (
