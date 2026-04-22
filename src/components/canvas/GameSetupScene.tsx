@@ -38,6 +38,13 @@ gsap.registerPlugin(ScrollTrigger, useGSAP);
 ScrollTrigger.config({ ignoreMobileResize: true });
 
 // ---------------------------------------------------------------------------
+// Dev debug visuals — camera HUD overlay + in-scene axes/grid/bezier markers.
+// Flip to `true` locally to see the camera path, control points, and a live
+// pos/target/fov readout. Kept `false` so dev builds look like production.
+// ---------------------------------------------------------------------------
+const SHOW_DEBUG = false;
+
+// ---------------------------------------------------------------------------
 // Scene X offset — no longer needed for layout. The right-half layout is now
 // achieved by restricting #hero-canvas-view to w-1/2 right-0 in index.astro.
 // Model renders at world origin, camera looks directly at model center.
@@ -288,7 +295,7 @@ export default function GameSetupScene() {
   // Updated directly via textContent in useFrame (no React re-renders).
   const hudRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
-    if (!import.meta.env.DEV) return;
+    if (!SHOW_DEBUG) return;
     const el = document.createElement('div');
     el.id = 'camera-debug-hud';
     el.style.cssText = [
@@ -564,7 +571,7 @@ export default function GameSetupScene() {
        *   gridHelper: 20x20 on XZ plane at y=0, violet major lines.
        *   Box3 bounds + markers at key path points (start/mid/end + mid-target).
        */}
-      {import.meta.env.DEV && (
+      {SHOW_DEBUG && (
         <>
           <axesHelper args={[5]} />
           <gridHelper args={[20, 20, '#a78bfa', '#3a2a5e']} />
