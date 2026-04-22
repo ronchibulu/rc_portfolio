@@ -18,3 +18,6 @@ export const $scrollProgress = atom<number>(0);
 
 /** True when the 3D model has finished loading. Set in Phase 5. */
 export const $sceneReady = atom<boolean>(false);
+
+/** Active section for cross-island routing. Set by ScrollNarrative in Phase 6. */
+export const $activeSection = atom<string>('hero');

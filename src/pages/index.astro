@@ -1,33 +1,25 @@
 ---
 /*
- * Phase 2 — Landing page composition.
- * Replaces the Phase 1 smoke test (01-03 output).
+ * Phase 2/6 — Landing page composition.
+ *
+ * Phase 2: Header, Footer, HeroTyping, placeholder sections.
+ * Phase 6: Scroll pin wrapper for GSAP camera fly-in, tagline overlays,
+ *          ScrollNarrative island for tagline fades + hard-cut $activeSection.
  *
  * Layout:
- *   BaseLayout > Header (sticky, h-16) > <main> (hero + 3 placeholder sections) > Footer.
+ *   BaseLayout > Header (sticky, h-16) > <main> (pin wrapper > hero + taglines, OS sections) > Footer.
  *
- * Hero (HERO-001/002/003/004):
- *   - <HeroTyping> React island mounted with client:only="react" (no SSR output,
- *     zero hydration mismatch risk). HERO-001 (no-JS visibility) is satisfied by the
- *     <noscript> static fallback below the island. Hard rule: complex React islands
- *     use client:only per AGENTS.md.
- *   - Scroll cue: <a href="#projects"> wrapping the ▼ glyph, bobbing via .animate-scrollbob
- *     (defined in Plan 01 globals.css, gated by prefers-reduced-motion: no-preference).
- *
- * Placeholders: three <section>s with one-line copy per 02-UI-SPEC §Placeholder stubs.
- *   Each is min-h-dvh + scroll-mt-16 so smooth-scroll lands below the sticky nav.
- *
- * Canvas compatibility (02-UI-SPEC §Color): hero section has NO background image /
- *   gradient / overlay — only the body's zinc-950 shows through. The Phase 4-6 3D
- *   canvas will slot BEHIND this markup.
- *
- * No 3D, no GSAP, no Motion here — Phase 3+ concerns.
+ * Scroll pin structure (Phase 6):
+ *   #scene-scroll-pin — outer div, min-h-[200dvh], ScrollTrigger trigger.
+ *   section#hero       — sticky top-0 h-dvh, stays fixed while outer scrolls.
+ *   At 100% scroll the pin releases and #projects snaps into view (hard cut).
  */
-import BaseLayout from '@/layouts/BaseLayout.astro';
-import Header from '@/components/Header.astro';
-import Footer from '@/components/Footer.astro';
-import HeroTyping from '@/components/HeroTyping';
+import ScrollNarrative from '@/components/canvas/ScrollNarrative';
 import SceneCanvas from '@/components/canvas/SceneCanvas';
+import Footer from '@/components/Footer.astro';
+import Header from '@/components/Header.astro';
+import HeroTyping from '@/components/HeroTyping';
+import BaseLayout from '@/layouts/BaseLayout.astro';
 
 const hero = {
   name: "Hi, I'm Ronald.",
@@ -37,79 +29,114 @@ const hero = {
 ---
 
 <BaseLayout title="Ronald Cheng — Senior Full-Stack Developer">
-  {/* ===== CANVAS LAYER (Phase 4) ===== */}
+  {/* ===== CANVAS LAYER (Phase 4/5) ===== */}
   {/*
-    * Fixed full-viewport R3F canvas behind all HTML content.
-    * CSS contract (04-UI-SPEC §Canvas CSS Contract):
-    *   - fixed inset-0: covers the full viewport at all breakpoints, no responsive overrides needed.
-    *   - z-0: behind all content layers (z-10+).
-    *   - pointer-events-none: mouse/touch events pass through to nav, hero, footer.
-    *   - aria-hidden="true": decorative 3D background, excluded from a11y tree.
-    * client:only="react": no SSR output; canvas hydrates client-side only (AGENTS.md hard rule).
-    * NEVER use client:load or client:visible for R3F islands.
-    */}
-  {/*
-    * SceneCanvas owns the entire R3F/Drei tree including the hero scene View.
-    * heroViewId links to the tracking div inside the hero section.
-    * View + View.Port must share the same React root (tunnel-rat requirement) —
-    * this is why SceneView is no longer a separate island (Phase 5 fix).
+    * Fixed full-viewport R3F canvas — z-0, pointer-events-none, aria-hidden.
+    * SceneCanvas owns the View + GameSetupScene (Phase 5 architecture fix).
+    * Phase 6: GameSetupScene now contains the GSAP ScrollTrigger camera hook.
     */}
   <div class="pointer-events-none fixed inset-0 z-0" aria-hidden="true">
     <SceneCanvas client:only="react" heroViewId="hero-canvas-view" />
   </div>
 
+  {/* ===== SCROLL NARRATIVE (Phase 6) ===== */}
+  {/*
+    * Pure scroll-orchestration island — no DOM output, returns null.
+    * Owns tagline scrub timeline + hard-cut $activeSection transition.
+    * client:only="react" — no SSR output needed.
+    */}
+  <ScrollNarrative client:only="react" />
+
   <Header />
 
   <main>
-    {/* =============== HERO =============== */}
-    <section id="hero" class="relative z-10 flex min-h-dvh scroll-mt-16 items-center">
+    {/* =============== SCROLL PIN WRAPPER (Phase 6) =============== */}
+    {/*
+      * Outer div is the ScrollTrigger trigger (#scene-scroll-pin).
+      * min-h-[200dvh] gives the camera fly-in its scroll travel range (~1 viewport).
+      * 100dvh not 100vh (AGENTS.md hard rule).
+      * z-10 so hero text sits above the fixed canvas (z-0).
+      */}
+    <div id="scene-scroll-pin" class="relative z-10 min-h-[200dvh]">
       {/*
-        * Phase 5 — View tracking region covers the full hero section.
-        * The 3D scene fills the entire hero viewport; text overlays on top.
-        * Camera position/angle frames the desk in the center-right of the frame
-        * so it doesn't occlude the left-aligned hero text.
+        * Sticky inner — stays at viewport top while outer div scrolls.
+        * h-dvh = exactly one dynamic viewport height (AGENTS.md hard rule).
+        * overflow-hidden prevents tagline text from leaking outside viewport.
         */}
-      <div id="hero-canvas-view" class="absolute inset-0 pointer-events-none" aria-hidden="true" />
-
-      <div class="w-full px-4 py-16 sm:px-6 md:py-24 lg:px-12 lg:py-32">
-        <div class="mx-auto max-w-7xl">
-        <HeroTyping
-          client:only="react"
-          name={hero.name}
-          role={hero.role}
-          tagline={hero.tagline}
-        />
-        {/* Static fallback for no-JS / pre-hydration (HERO-001) */}
-        <noscript>
-          <div class="flex flex-col gap-4 md:gap-6">
-            <div class="font-pixel text-3xl leading-tight text-zinc-100 sm:text-4xl md:text-5xl lg:text-6xl">
-              {hero.name}
-            </div>
-            <p class="font-pixel text-base leading-snug text-purple-400 sm:text-lg md:text-xl lg:text-2xl">
-              {hero.role}
-            </p>
-            <p class="text-sm leading-relaxed sm:text-base md:text-lg">
-              <span class="font-pixel text-purple-400">&gt;_ </span>
-              <span class="font-sans text-zinc-500">Shipping </span>
-              <span class="font-sans text-yellow-400">pixel-sharp</span>
-              <span class="font-sans text-zinc-500"> frontends with purpose.</span>
-            </p>
-          </div>
-        </noscript>
-        </div>
-      </div>
-
-      {/* Scroll cue — anchored bottom-center, bobs via .animate-scrollbob */}
-      <a
-        href="#projects"
-        aria-label="Scroll to projects"
-        class="absolute bottom-4 left-1/2 inline-flex -translate-x-1/2 animate-scrollbob items-center justify-center rounded-sm p-1 font-pixel text-lg text-yellow-400 transition-colors hover:text-yellow-400 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black md:bottom-6 lg:bottom-8"
+      <section
+        id="hero"
+        class="sticky top-0 flex h-dvh items-center overflow-hidden scroll-mt-16"
+        aria-label="Hero"
       >
-        ▼
-      </a>
-    </section>
+        {/*
+          * Phase 5 — View tracking region covers the full hero section.
+          * The 3D scene fills the entire hero viewport; text overlays on top.
+          */}
+        <div id="hero-canvas-view" class="absolute inset-0 pointer-events-none" aria-hidden="true" />
 
-    {/* =============== PROJECTS PLACEHOLDER — arriving in Phase 7 =============== */}
+        {/* ── Hero text ── */}
+        <div class="relative z-10 w-full px-4 py-16 sm:px-6 md:py-24 lg:px-12 lg:py-32">
+          <div class="mx-auto max-w-7xl">
+            <HeroTyping
+              client:only="react"
+              name={hero.name}
+              role={hero.role}
+              tagline={hero.tagline}
+            />
+            {/* Static fallback for no-JS / pre-hydration (HERO-001) */}
+            <noscript>
+              <div class="flex flex-col gap-4 md:gap-6">
+                <div class="font-pixel text-3xl leading-tight text-zinc-100 sm:text-4xl md:text-5xl lg:text-6xl">
+                  {hero.name}
+                </div>
+                <p class="font-pixel text-base leading-snug text-purple-400 sm:text-lg md:text-xl lg:text-2xl">
+                  {hero.role}
+                </p>
+                <p class="text-sm leading-relaxed sm:text-base md:text-lg">
+                  <span class="font-pixel text-purple-400">&gt;_ </span>
+                  <span class="font-sans text-zinc-500">Shipping </span>
+                  <span class="font-sans text-yellow-400">pixel-sharp</span>
+                  <span class="font-sans text-zinc-500"> frontends with purpose.</span>
+                </p>
+              </div>
+            </noscript>
+          </div>
+        </div>
+
+        {/* ── Tagline overlays (Phase 6) ── */}
+        {/*
+          * Start opacity-0. ScrollNarrative.tsx scrubs these in/out during fly-in.
+          * aria-hidden="true" — decorative overlays, content already in HeroTyping.
+          * Reduced-motion: display:none via globals.css @media rule.
+          */}
+        <div
+          id="fly-tagline-1"
+          aria-hidden="true"
+          class="absolute bottom-24 left-0 right-0 z-20 px-4 text-center font-pixel text-xs text-purple-400 opacity-0 sm:px-6 sm:text-sm lg:px-12 lg:text-base"
+        >
+          Full-Stack · Frontend · AI
+        </div>
+        <div
+          id="fly-tagline-2"
+          aria-hidden="true"
+          class="absolute bottom-14 left-0 right-0 z-20 px-4 text-center font-pixel text-xs text-zinc-500 opacity-0 sm:px-6 sm:text-sm lg:px-12"
+        >
+          5 years shipping production-grade frontends
+        </div>
+
+        {/* Scroll cue — anchored bottom-center, bobs via .animate-scrollbob */}
+        <a
+          href="#projects"
+          aria-label="Scroll to projects"
+          class="absolute bottom-4 left-1/2 z-30 inline-flex -translate-x-1/2 animate-scrollbob items-center justify-center rounded-sm p-1 font-pixel text-lg text-yellow-400 transition-colors hover:text-yellow-400 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black md:bottom-6 lg:bottom-8"
+        >
+          ▼
+        </a>
+      </section>
+    </div>
+    {/* ── End #scene-scroll-pin ── */}
+
+    {/* =============== PROJECTS — Phase 7 OS Shell =============== */}
     <section
       id="projects"
       class="relative z-10 flex min-h-dvh scroll-mt-16 items-center justify-center px-4 sm:px-6 lg:px-12"
@@ -119,7 +146,7 @@ const hero = {
       </p>
     </section>
 
-    {/* =============== ABOUT PLACEHOLDER — arriving in Phase 9 =============== */}
+    {/* =============== ABOUT — Phase 9 Timeline =============== */}
     <section
       id="about"
       class="relative z-10 flex min-h-dvh scroll-mt-16 items-center justify-center px-4 sm:px-6 lg:px-12"
@@ -129,7 +156,7 @@ const hero = {
       </p>
     </section>
 
-    {/* =============== CONTACT PLACEHOLDER — footer is contact =============== */}
+    {/* =============== CONTACT — footer is contact =============== */}
     <section
       id="contact"
       class="relative z-10 flex min-h-dvh scroll-mt-16 items-center justify-center px-4 sm:px-6 lg:px-12"
