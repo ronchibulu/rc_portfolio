@@ -46,15 +46,15 @@ export const CAMERA_FOV = 40;
 export const CAMERA_NEAR = 0.1;
 export const CAMERA_FAR = 100;
 
-// Camera fly-in end: camera directly in front of the monitor screen, centered.
-// Position X/Y must equal target X/Y so the look direction is perfectly perpendicular
-// to the screen face — this centers the monitor in the viewport with no angular offset.
-// Monitor screen center: approx x≈0.3, y≈3.5, z≈-0.8 (front face).
-// Camera sits at same X/Y, pulled out to z≈0.6 — close enough to fill the frame.
-// FOV narrows to 18° at end so the screen fills the entire canvas.
-export const CAMERA_END_POSITION: [number, number, number] = [0.3, 3.5, 0.6];
-export const CAMERA_END_TARGET: [number, number, number] = [0.3, 3.5, -1.0];
-export const CAMERA_END_FOV = 18;
+// Camera fly-in end: directly in front of the monitor screen face, perfectly horizontal.
+// The monitor screen faces +Z; camera approaches along +Z axis at screen center height.
+// x=0.3  matches screen center X
+// y=3.5  matches screen center Y (horizontal approach — not looking up or down)
+// z=0.8  in front of the screen face; target z=-0.5 (center of the screen panel)
+// FOV tapers to 20° so the screen fills the canvas at the end.
+export const CAMERA_END_POSITION: [number, number, number] = [0.3, 3.5, 0.8];
+export const CAMERA_END_TARGET: [number, number, number] = [0.3, 3.5, -0.5];
+export const CAMERA_END_FOV = 20;
 
 // ---------------------------------------------------------------------------
 // Module-level preload — fires before any component renders.
@@ -65,11 +65,20 @@ useGLTF.preload('/models/gaming_setup_v12.glb');
 // Allocate Vector3 instances outside any hook/frame to avoid per-frame GC.
 // ---------------------------------------------------------------------------
 const _startPos = new THREE.Vector3(...CAMERA_POSITION);
-const _endPos = new THREE.Vector3(...CAMERA_END_POSITION); // updated after CAMERA_END_POSITION above
+const _endPos = new THREE.Vector3(...CAMERA_END_POSITION);
 const _startTarget = new THREE.Vector3(...CAMERA_TARGET);
-const _endTarget = new THREE.Vector3(...CAMERA_END_TARGET); // updated after CAMERA_END_TARGET above
+const _endTarget = new THREE.Vector3(...CAMERA_END_TARGET);
 const _tmpPos = new THREE.Vector3();
 const _tmpTarget = new THREE.Vector3();
+
+// Quadratic bezier midpoint — camera drops to screen height early so the
+// approach feels horizontal rather than looking down from above.
+// X/Z: midpoint between start and end; Y: screen height (3.5) for level approach.
+const _midPos = new THREE.Vector3(
+  (CAMERA_POSITION[0] + CAMERA_END_POSITION[0]) / 2, // x midpoint
+  CAMERA_END_POSITION[1], // drop to screen Y immediately
+  (CAMERA_POSITION[2] + CAMERA_END_POSITION[2]) / 2, // z midpoint
+);
 
 // ---------------------------------------------------------------------------
 // SceneLoader — Suspense fallback rendered while .glb is in-flight.
@@ -145,7 +154,26 @@ export default function GameSetupScene() {
     const t = cameraProgress.current.value;
     if (t <= 0) return;
 
-    _tmpPos.lerpVectors(_startPos, _endPos, t);
+    // Quadratic bezier through a midpoint: camera drops to screen level quickly,
+    // then flies forward horizontally. This prevents the "looking down at an angle"
+    // artifact that linear lerp produces when the start is high and back.
+    //
+    // Midpoint: screen-level height, halfway between start and end in XZ.
+    // At t=0.5 the camera is already at screen height (y=3.5) and level.
+    const tSq = t * t;
+    const oneMinusT = 1 - t;
+    const oneMinusTSq = oneMinusT * oneMinusT;
+    const twoT = 2 * oneMinusT * t;
+
+    // Bezier: P = (1-t)^2 * P0 + 2*(1-t)*t * P1 + t^2 * P2
+    // P0 = start, P1 = midpoint, P2 = end
+    _tmpPos.set(
+      oneMinusTSq * _startPos.x + twoT * _midPos.x + tSq * _endPos.x,
+      oneMinusTSq * _startPos.y + twoT * _midPos.y + tSq * _endPos.y,
+      oneMinusTSq * _startPos.z + twoT * _midPos.z + tSq * _endPos.z,
+    );
+
+    // Target lerps straight from start to end (no bezier needed for lookAt).
     _tmpTarget.lerpVectors(_startTarget, _endTarget, t);
 
     cam.position.copy(_tmpPos);
