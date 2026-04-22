@@ -19,6 +19,8 @@
  *   - Single canvas. Drei <View.Port> and all <View> regions live in this root.
  *   - gl={{ alpha: true }} keeps the canvas transparent — body bg-zinc-950 shows through.
  */
+import { $gpuTier } from '@/stores';
+import { useStore } from '@nanostores/react';
 import { useGLTF } from '@react-three/drei/core/Gltf.js';
 // Use direct sub-path imports to avoid pre-bundling the entire @react-three/drei
 // barrel (139 re-exports). The barrel causes Vite's dep optimizer to time out,
@@ -70,10 +72,20 @@ export default function SceneCanvas({ heroViewId = 'hero-canvas-view' }: SceneCa
     typeof document !== 'undefined' ? document.getElementById(heroViewId) : null,
   );
 
+  // Phase 10 — GPU-tier adaptive DPR (MOBILE-002):
+  //  tier 0 (unknown) or 3 (high) → [1, 2]
+  //  tier 2 (mid)                 → [1, 1.5]
+  //  tier 1 (low/mobile)          → [1, 1] (minimal resource usage)
+  const gpuTier = useStore($gpuTier);
+  const dpr: [number, number] = gpuTier === 2 ? [1, 1.5] : gpuTier === 1 ? [1, 1] : [1, 2];
+
+  // Phase 10 — Skip canvas entirely on low-tier / mobile (tier 1)
+  if (gpuTier === 1) return null;
+
   return (
     <Canvas
       frameloop="demand"
-      dpr={[1, 2]}
+      dpr={dpr}
       gl={{
         antialias: true,
         alpha: true,

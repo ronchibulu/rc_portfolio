@@ -271,3 +271,23 @@ html {
     transform: none;
   }
 }
+
+/*
+ * Phase 10 — Mobile & Reduced-Motion Gates
+ * Additional prefers-reduced-motion rules for content-level animations
+ * not already gated by JavaScript (MOBILE-004, SCROLL-008).
+ */
+
+/* Disable CSS smooth-scroll transitions site-wide already in Phase 2 above. */
+/* Disable CSS transition on any element with the group class */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    /* Allow discrete transitions (visibility, display) but zero duration for motion */
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
