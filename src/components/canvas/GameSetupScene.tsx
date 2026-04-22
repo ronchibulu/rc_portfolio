@@ -1,51 +1,72 @@
-import { $sceneReady } from '@/stores/sceneStore';
+import { $sceneReady, $scrollProgress } from '@/stores';
+import { useGSAP } from '@gsap/react';
 import { useGLTF } from '@react-three/drei/core/Gltf.js';
 import { PerspectiveCamera } from '@react-three/drei/core/PerspectiveCamera.js';
 import { useProgress } from '@react-three/drei/core/Progress.js';
-/**
- * Phase 5 — R3F scene component.
- *
- * Provides:
- *  - Named camera constants (Phase 6 reads these as animation start points)
- *  - SCENE_OFFSET_X: hero-state rightward offset; Phase 6 tweens to 0 on scroll fly-in
- *  - Module-level preload for the .glb (SCENE-005 / PERF-002 — fires before any render)
- *  - 3-light rig matching the dark purple atmosphere in image.png (UI-SPEC §2)
- *  - SceneLoader Suspense fallback with Drei <Html> + useProgress (UI-SPEC §3)
- *  - $sceneReady side effect + invalidate() after model resolves (CONTEXT.md)
- *
- * Sub-path imports only — no @react-three/drei barrel (Phase 4 established fix for Vite 504).
- * Do NOT call useGLTF.setDecoderPath() here — already done in SceneCanvas.tsx.
- * Do NOT add orbit controls or a continuous useFrame loop (AGENTS.md hard rules).
- */
 import { Html } from '@react-three/drei/web/Html.js';
-import { useThree } from '@react-three/fiber';
-import { useEffect } from 'react';
+import { useFrame, useThree } from '@react-three/fiber';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+
+/**
+ * Phase 5/6 — R3F scene component.
+ *
+ * Phase 5 provides:
+ *  - Named camera constants (Phase 6 reads these as animation start points)
+ *  - Module-level preload for the .glb (SCENE-005 / PERF-002)
+ *  - SceneLoader Suspense fallback with Drei <Html> + useProgress
+ *  - $sceneReady side effect + invalidate() after model resolves
+ *
+ * Phase 6 adds:
+ *  - CAMERA_END_POSITION / CAMERA_END_TARGET for fly-in destination
+ *  - useGSAP() ScrollTrigger hook — GSAP writes cameraProgress ref
+ *  - useFrame reads cameraProgress ref, applies lerped position/lookAt (Pitfall §9)
+ *  - $scrollProgress nanostore updated from GSAP onUpdate
+ *  - invalidate() called each tick during active scroll (demand frameloop)
+ *  - Reduced-motion guard: skip ScrollTrigger when prefers-reduced-motion: reduce
+ *
+ * Sub-path imports only — no @react-three/drei barrel (Phase 4 fix for Vite 504).
+ */
+
+// ---------------------------------------------------------------------------
+// Register GSAP plugins once at module level.
+// ScrollTrigger.config ignoreMobileResize prevents iOS address-bar jank (Pitfall §10).
+// ---------------------------------------------------------------------------
+gsap.registerPlugin(ScrollTrigger, useGSAP);
+ScrollTrigger.config({ ignoreMobileResize: true });
 
 // ---------------------------------------------------------------------------
 // Camera constants — Phase 6 imports these as animation start points.
-// Tunable: values matched to image.png isometric perspective.
 // ---------------------------------------------------------------------------
-// gaming_setup_v12.glb bbox: min(-4.83, 2, -6.69) / max(7.17, 3.92, 5.31)
-// Desk top surface y≈3.0, monitor top y≈3.9, floor y≈0
-// Reference image.png: camera upper-right, looking down at ~35° — desk top surface
-// clearly visible, monitor faces viewer, chair sits right of desk.
-// Target aimed at desk center (not floor) so camera looks at desk, not ground.
 export const CAMERA_POSITION: [number, number, number] = [6, 6, 8];
 export const CAMERA_TARGET: [number, number, number] = [1.17, 3.2, -0.69];
 export const CAMERA_FOV = 40;
 export const CAMERA_NEAR = 0.1;
 export const CAMERA_FAR = 100;
 
+// Camera fly-in end: frame the monitor screen face ("entering the monitor" illusion)
+export const CAMERA_END_POSITION: [number, number, number] = [1.8, 3.6, 3.2];
+export const CAMERA_END_TARGET: [number, number, number] = [0.5, 3.3, -0.5];
+
 // ---------------------------------------------------------------------------
-// Module-level preload — fires immediately when the module is evaluated,
-// before any component renders. Draco path already set in SceneCanvas.tsx.
+// Module-level preload — fires before any component renders.
 // ---------------------------------------------------------------------------
 useGLTF.preload('/models/gaming_setup_v12.glb');
 
 // ---------------------------------------------------------------------------
+// Allocate Vector3 instances outside any hook/frame to avoid per-frame GC.
+// ---------------------------------------------------------------------------
+const _startPos = new THREE.Vector3(...CAMERA_POSITION);
+const _endPos = new THREE.Vector3(...CAMERA_END_POSITION);
+const _startTarget = new THREE.Vector3(...CAMERA_TARGET);
+const _endTarget = new THREE.Vector3(...CAMERA_END_TARGET);
+const _tmpPos = new THREE.Vector3();
+const _tmpTarget = new THREE.Vector3();
+
+// ---------------------------------------------------------------------------
 // SceneLoader — Suspense fallback rendered while .glb is in-flight.
-// Exported so SceneView.tsx can use it as the <Suspense fallback>.
 // ---------------------------------------------------------------------------
 export function SceneLoader() {
   const { progress } = useProgress();
@@ -59,19 +80,71 @@ export function SceneLoader() {
 }
 
 // ---------------------------------------------------------------------------
-// GameSetupScene — the R3F scene rendered inside a Drei <View>.
+// GameSetupScene — R3F scene rendered inside a Drei <View>.
 // ---------------------------------------------------------------------------
 export default function GameSetupScene() {
   const { scene } = useGLTF('/models/gaming_setup_v12.glb');
   const { camera, invalidate } = useThree();
 
-  // After model resolves: aim camera at scene centre, render the first
-  // demand-mode frame, and signal that the scene is ready for Phase 6.
+  // Plain JS ref — GSAP writes value [0,1], useFrame reads it (Pitfall §9 single-writer rule).
+  const cameraProgress = useRef({ value: 0 });
+
+  // After model resolves: aim camera at scene centre, render first demand-mode frame,
+  // signal scene ready for Phase 6 ScrollTrigger setup.
   useEffect(() => {
     camera.lookAt(new THREE.Vector3(...CAMERA_TARGET));
     invalidate();
     $sceneReady.set(true);
   }, [camera, invalidate]);
+
+  // ---------------------------------------------------------------------------
+  // Phase 6 — GSAP ScrollTrigger camera fly-in.
+  // useGSAP() is Strict Mode safe (AGENTS.md hard rule — no raw useEffect for GSAP).
+  // Trigger: #scene-scroll-pin (set in index.astro Plan 06-02).
+  // scrub: true — no numeric lag/catch-up (ARCHITECTURE.md §GSAP ScrollTrigger).
+  // ---------------------------------------------------------------------------
+  useGSAP(
+    () => {
+      // Reduced-motion guard — skip entire ScrollTrigger when user prefers no motion.
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      const tween = gsap.to(cameraProgress.current, {
+        value: 1,
+        ease: 'power2.inOut',
+        scrollTrigger: {
+          trigger: '#scene-scroll-pin',
+          start: 'top top',
+          end: 'bottom top',
+          scrub: true,
+          onUpdate: (self) => {
+            $scrollProgress.set(self.progress);
+            invalidate(); // demand frameloop: render this frame during scroll
+          },
+        },
+      });
+
+      return () => {
+        tween.scrollTrigger?.kill();
+      };
+    },
+    { dependencies: [] },
+  );
+
+  // ---------------------------------------------------------------------------
+  // useFrame — single writer to the scene graph (Pitfall §9).
+  // Lerps camera position and lookAt target from start → end as progress advances.
+  // No-ops at progress = 0 to avoid redundant per-frame writes when idle.
+  // ---------------------------------------------------------------------------
+  useFrame(({ camera: cam }) => {
+    const t = cameraProgress.current.value;
+    if (t <= 0) return;
+
+    _tmpPos.lerpVectors(_startPos, _endPos, t);
+    _tmpTarget.lerpVectors(_startTarget, _endTarget, t);
+
+    cam.position.copy(_tmpPos);
+    cam.lookAt(_tmpTarget);
+  });
 
   return (
     <>
@@ -85,15 +158,13 @@ export default function GameSetupScene() {
       />
 
       {/*
-       * Lighting: use only a tiny neutral ambient so the .glb's baked lighting
-       * and emission textures (monitor glow, desk surface) display as authored.
-       * The reference image.png is lit by the .glb's own baked lights —
-       * adding external point lights overexposes the scene.
-       * Keep intensity ≤ 0.15 so baked shadows remain intact.
+       * Lighting: single low ambient so the .glb baked lighting + monitor emission
+       * display as authored (matches image.png). No custom point lights — they
+       * overexpose the scene (Phase 5 fix).
        */}
       <ambientLight intensity={0.12} />
 
-      {/* Model — rendered centered, no offset (Phase 6 handles scroll positioning) */}
+      {/* Model */}
       <primitive object={scene} />
     </>
   );
