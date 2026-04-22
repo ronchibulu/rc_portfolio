@@ -46,9 +46,11 @@ export const CAMERA_FOV = 40;
 export const CAMERA_NEAR = 0.1;
 export const CAMERA_FAR = 100;
 
-// Camera fly-in end: frame the monitor screen face ("entering the monitor" illusion)
-export const CAMERA_END_POSITION: [number, number, number] = [1.8, 3.6, 3.2];
-export const CAMERA_END_TARGET: [number, number, number] = [0.5, 3.3, -0.5];
+// Camera fly-in end: very close to the monitor screen face, looking straight at it.
+// The monitor screen in the GLB is at approx x≈0.3, y≈3.4, z≈-1.5 (face forward).
+// Camera ends just in front: z≈0.8 gives a close frame; target is the screen face center.
+export const CAMERA_END_POSITION: [number, number, number] = [0.4, 3.5, 1.0];
+export const CAMERA_END_TARGET: [number, number, number] = [0.3, 3.35, -1.5];
 
 // ---------------------------------------------------------------------------
 // Module-level preload — fires before any component renders.
@@ -59,9 +61,9 @@ useGLTF.preload('/models/gaming_setup_v12.glb');
 // Allocate Vector3 instances outside any hook/frame to avoid per-frame GC.
 // ---------------------------------------------------------------------------
 const _startPos = new THREE.Vector3(...CAMERA_POSITION);
-const _endPos = new THREE.Vector3(...CAMERA_END_POSITION);
+const _endPos = new THREE.Vector3(...CAMERA_END_POSITION); // updated after CAMERA_END_POSITION above
 const _startTarget = new THREE.Vector3(...CAMERA_TARGET);
-const _endTarget = new THREE.Vector3(...CAMERA_END_TARGET);
+const _endTarget = new THREE.Vector3(...CAMERA_END_TARGET); // updated after CAMERA_END_TARGET above
 const _tmpPos = new THREE.Vector3();
 const _tmpTarget = new THREE.Vector3();
 

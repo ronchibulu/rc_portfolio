@@ -74,8 +74,8 @@ const hero = {
           */}
         <div id="hero-canvas-view" class="absolute inset-0 pointer-events-none" aria-hidden="true" />
 
-        {/* ── Hero text ── */}
-        <div class="relative z-10 w-full px-4 py-16 sm:px-6 md:py-24 lg:px-12 lg:py-32">
+        {/* ── Hero text — fades out early in scroll (ScrollNarrative targets #hero-text-content) ── */}
+        <div id="hero-text-content" class="relative z-10 w-full px-4 py-16 sm:px-6 md:py-24 lg:px-12 lg:py-32">
           <div class="mx-auto max-w-7xl">
             <HeroTyping
               client:only="react"
@@ -126,12 +126,20 @@ const hero = {
 
         {/* Scroll cue — anchored bottom-center, bobs via .animate-scrollbob */}
         <a
+          id="scroll-cue"
           href="#projects"
           aria-label="Scroll to projects"
           class="absolute bottom-4 left-1/2 z-30 inline-flex -translate-x-1/2 animate-scrollbob items-center justify-center rounded-sm p-1 font-pixel text-lg text-yellow-400 transition-colors hover:text-yellow-400 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black md:bottom-6 lg:bottom-8"
         >
           ▼
         </a>
+
+        {/* Blackout overlay — fades from transparent to black as camera enters monitor (Phase 6) */}
+        <div
+          id="fly-blackout"
+          aria-hidden="true"
+          class="pointer-events-none absolute inset-0 z-40 bg-black opacity-0"
+        />
       </section>
     </div>
     {/* ── End #scene-scroll-pin ── */}
