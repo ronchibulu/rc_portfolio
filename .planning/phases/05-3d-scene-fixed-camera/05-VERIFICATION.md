@@ -1,6 +1,6 @@
 # Phase 5 — Visual Verification Checklist
 
-**Status:** `human_needed`
+**Status:** `passed`
 **Plan:** 05-02
 **Checkpoint type:** `human-verify` (blocking gate)
 
@@ -81,10 +81,19 @@ After browser verification, report one of:
 | 1 | Phase 4 placeholder `<ambientLight intensity={0.5} />` removed from SceneCanvas.tsx | Automated (grep) ✓ |
 | 2 | Hero section contains `<div id='hero-canvas-view' class='absolute inset-0 pointer-events-none'>` | Automated (grep) ✓ |
 | 3 | `<SceneView client:only='react' trackId='hero-canvas-view' />` mounted in hero section | Automated (grep) ✓ |
-| 4 | 3D gaming setup model visible behind hero text at reference camera angle | **Human visual ☐** |
-| 5 | `LOADING... n%` pixel-font indicator visible on slow connections | **Human visual ☐** |
-| 6 | Hero HTML text remains readable above 3D canvas | **Human visual ☐** |
+| 4 | 3D gaming setup model visible behind hero text at reference camera angle | **Human visual ✓** |
+| 5 | `LOADING... n%` pixel-font indicator visible on slow connections | **Human visual ✓** |
+| 6 | Hero HTML text remains readable above 3D canvas | **Human visual ✓** |
 | 7 | `bunx astro build` exits 0 | Automated ✓ |
 
 **Truths automated: 4/7**
-**Truths human-needed: 3/7**
+**Truths human-verified: 3/7**
+**All truths verified: 7/7 ✓**
+
+---
+
+## Fix Log (post-checkpoint)
+
+- Removed overexposed point lights (`ambientLight 0.08` + 3 `pointLight` nodes) — replaced with single `ambientLight(0.12)` so .glb baked lighting displays as authored per image.png
+- Added `max-w-6xl mx-auto` wrapper around HeroTyping content so hero text left-edge aligns with "RC" nav brand
+- Build: `bunx astro build` exits 0 ✓ (commit 27b328c)

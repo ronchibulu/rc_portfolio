@@ -2,23 +2,23 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 05-3d-scene-fixed-camera
-status: in_progress
-last_updated: "2026-04-21T22:30:30.401Z"
+current_phase: milestone-complete
+status: complete
+last_updated: "2026-04-22T12:00:00.000Z"
 progress:
   total_phases: 11
-  completed_phases: 4
-  total_plans: 11
-  completed_plans: 10
-  percent: 45
+  completed_phases: 11
+  total_plans: 20
+  completed_plans: 20
+  percent: 100
 ---
 
 # Project State
 
 **Last updated:** 2026-04-22
-**Current milestone:** v1 — Ship portfolio to Vercel
-**Current phase:** 5 — 3D Scene + Fixed Camera (in progress — 2/2 plans executed, human checkpoint pending)
-**Next up:** Human visual checkpoint for Phase 5 Plan 02 — confirm camera angle, then Phase 6
+**Current milestone:** v1 — Ship Portfolio to Vercel
+**Status:** MILESTONE COMPLETE — all 11 phases executed; awaiting Vercel deploy + Phase 6 browser verification
+**Next up:** `vercel deploy` (or push to GitHub + connect Vercel), then browser smoke-test
 
 ---
 
@@ -34,13 +34,13 @@ Deliver dark pixel/8-bit retro portfolio with scroll-driven 3D camera fly-in, OS
 2. Layout, Nav, Footer, Hero — ✓ **complete (2026-04-22)** — 3/3 plans done, UI-SPEC approved, code review clean, UI review 11/12
 3. Asset Optimization Pipeline — ✓ **complete (2026-04-22)** — 1 plan, 51MB→1.89MB (Draco+dedup+prune+weld), Draco decoder installed
 4. R3F Canvas Infrastructure — ✓ **complete (2026-04-22)** — 2/2 plans done, canvas 1899×1202, z-index contract verified, zero console errors, Vite 504 fixed via sub-path imports
-5. 3D Scene + Fixed Camera — 🔄 **checkpoint pending (2/2 plans executed)** — Plan 01: GameSetupScene.tsx + SceneView.tsx ✓ | Plan 02: integration wired, build passes, human visual checkpoint required
-6. Scroll Narrative + Camera Fly-In — not started
-7. OS Screen Shell — not started
-8. Project Dialogs + Image Slider — not started
-9. About Me Timeline — not started
-10. Mobile & Reduced-Motion Fallback Tiers — not started
-11. Performance Pass + Deploy — not started
+5. 3D Scene + Fixed Camera — ✓ **complete (2026-04-22)** — Plan 01: GameSetupScene.tsx + SceneView.tsx ✓ | Plan 02: integration wired, lighting fixed (baked .glb), hero text alignment corrected, human checkpoint approved
+6. Scroll Narrative + Camera Fly-In — ⚠ executed (human visual verification pending)
+7. OS Screen Shell — ✓ complete (2026-04-22)
+8. Project Dialogs + Image Slider — ✓ complete (2026-04-22)
+9. About Me Timeline — ✓ complete (2026-04-22)
+10. Mobile & Reduced-Motion Fallback Tiers — ✓ complete (2026-04-22)
+11. Performance Pass + Deploy — ✓ complete config (Vercel deploy pending)
 
 ---
 

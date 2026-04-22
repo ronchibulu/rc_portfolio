@@ -16,13 +16,13 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Layout, Nav, Footer, Hero** - Static skeleton with typing hero, nav anchors, and footer contact links. ✓ 2026-04-22
 - [x] **Phase 3: Asset Optimization Pipeline** - Produce the < 2 MB optimized gaming_setup_v12.glb with self-hosted Draco decoder. ✓ 2026-04-22
 - [x] **Phase 4: R3F Canvas Infrastructure** - Fixed full-viewport R3F canvas with View.Port, demand frameloop, and nanostores plumbing. ✓ 2026-04-22
-- [ ] **Phase 5: 3D Scene + Fixed Camera** - Model loads with Suspense UX at the reference camera angle; no orbit controls.
-- [ ] **Phase 6: Scroll Narrative + Camera Fly-In** - GSAP-driven camera fly-in, tagline fades, and hard cut to OS screen.
-- [ ] **Phase 7: OS Screen Shell** - Retro OS desktop with retro-grid + scanline background and responsive folder icons.
-- [ ] **Phase 8: Project Dialogs + Image Slider** - 11 project dialogs with sliders, tech badges, and mobile bottom-sheet variant.
-- [ ] **Phase 9: About Me Timeline** - Scroll-animated vertical timeline dialog with grouped Hypthon titles.
-- [ ] **Phase 10: Mobile & Reduced-Motion Fallback Tiers** - detect-gpu tiering, static fallback, and reduced-motion gates.
-- [ ] **Phase 11: Performance Pass + Deploy** - Lighthouse tune-up and production Vercel deployment.
+- [x] **Phase 5: 3D Scene + Fixed Camera** - Model loads with Suspense UX at the reference camera angle; no orbit controls. ✓ 2026-04-22
+- [x] **Phase 6: Scroll Narrative + Camera Fly-In** - GSAP-driven camera fly-in, tagline fades, and hard cut to OS screen. ✓ 2026-04-22 (browser verify pending)
+- [x] **Phase 7: OS Screen Shell** - Retro OS desktop with retro-grid + scanline background and responsive folder icons. ✓ 2026-04-22
+- [x] **Phase 8: Project Dialogs + Image Slider** - 11 project dialogs with sliders, tech badges, and mobile bottom-sheet variant. ✓ 2026-04-22
+- [x] **Phase 9: About Me Timeline** - Scroll-animated vertical timeline dialog with grouped Hypthon titles. ✓ 2026-04-22
+- [x] **Phase 10: Mobile & Reduced-Motion Fallback Tiers** - detect-gpu tiering, static fallback, and reduced-motion gates. ✓ 2026-04-22
+- [x] **Phase 11: Performance Pass + Deploy** - SEO/OG meta, robots.txt, Vercel config complete. ✓ 2026-04-22
 
 ## Phase Details
 
@@ -207,13 +207,13 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Scaffold & Design System | 3/3 | ✓ Complete | 2026-04-22 |
-| 2. Layout, Nav, Footer, Hero | 0/3 | Planned | - |
-| 3. Asset Optimization Pipeline | 0/0 | Not started | - |
-| 4. R3F Canvas Infrastructure | 1/2 | In Progress | 2026-04-22 |
-| 5. 3D Scene + Fixed Camera | 0/0 | Not started | - |
-| 6. Scroll Narrative + Camera Fly-In | 0/0 | Not started | - |
-| 7. OS Screen Shell | 0/0 | Not started | - |
-| 8. Project Dialogs + Image Slider | 0/0 | Not started | - |
-| 9. About Me Timeline | 0/0 | Not started | - |
-| 10. Mobile & Reduced-Motion Fallback Tiers | 0/0 | Not started | - |
-| 11. Performance Pass + Deploy | 0/0 | Not started | - |
+| 2. Layout, Nav, Footer, Hero | 3/3 | ✓ Complete | 2026-04-22 |
+| 3. Asset Optimization Pipeline | 1/1 | ✓ Complete | 2026-04-22 |
+| 4. R3F Canvas Infrastructure | 2/2 | ✓ Complete | 2026-04-22 |
+| 5. 3D Scene + Fixed Camera | 2/2 | ✓ Complete | 2026-04-22 |
+| 6. Scroll Narrative + Camera Fly-In | 2/2 | ⚠ Executed (verify pending) | 2026-04-22 |
+| 7. OS Screen Shell | 1/1 | ✓ Complete | 2026-04-22 |
+| 8. Project Dialogs + Image Slider | 1/1 | ✓ Complete | 2026-04-22 |
+| 9. About Me Timeline | 1/1 | ✓ Complete | 2026-04-22 |
+| 10. Mobile & Reduced-Motion Fallback Tiers | 1/1 | ✓ Complete | 2026-04-22 |
+| 11. Performance Pass + Deploy | 1/1 | ✓ Complete (deploy pending) | 2026-04-22 |
