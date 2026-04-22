@@ -21,6 +21,7 @@
  *  - Desktop content area: centered folder icons
  */
 
+import AboutDialog from '@/components/AboutDialog';
 import type { Project } from '@/data/projects';
 import { $activeSection } from '@/stores';
 import { useStore } from '@nanostores/react';
@@ -152,25 +153,8 @@ export default function OSScreen() {
       {/* ── Phase 8: Project detail dialog (z-50 via Shadcn Dialog portal) ── */}
       <ProjectDialog project={selectedProject} onClose={() => setSelectedProject(null)} />
 
-      {/* ── Phase 9: About Me dialog placeholder ── */}
-      {aboutOpen && (
-        <dialog
-          open
-          className="fixed inset-0 z-50 m-0 flex w-full max-w-none items-end justify-center border-0 bg-transparent p-0 md:items-center"
-          aria-label="About Me"
-        >
-          <div className="w-full max-w-2xl rounded-t-2xl border border-zinc-700 bg-zinc-900 p-8 md:rounded-sm">
-            <p className="font-pixel text-xs text-zinc-500">About Me — Phase 9 coming soon.</p>
-            <button
-              type="button"
-              onClick={() => setAboutOpen(false)}
-              className="mt-4 font-pixel text-xs text-purple-400 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400"
-            >
-              Close
-            </button>
-          </div>
-        </dialog>
-      )}
+      {/* ── Phase 9: About Me dialog ── */}
+      <AboutDialog open={aboutOpen} onClose={() => setAboutOpen(false)} />
     </div>
   );
 }
