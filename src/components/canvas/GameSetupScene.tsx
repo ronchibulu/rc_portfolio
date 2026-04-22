@@ -7,6 +7,7 @@ import { useProgress } from '@react-three/drei/core/Progress.js';
  *
  * Provides:
  *  - Named camera constants (Phase 6 reads these as animation start points)
+ *  - SCENE_OFFSET_X: hero-state rightward offset; Phase 6 tweens to 0 on scroll fly-in
  *  - Module-level preload for the .glb (SCENE-005 / PERF-002 — fires before any render)
  *  - 3-light rig matching the dark purple atmosphere in image.png (UI-SPEC §2)
  *  - SceneLoader Suspense fallback with Drei <Html> + useProgress (UI-SPEC §3)
@@ -25,9 +26,14 @@ import * as THREE from 'three';
 // Camera constants — Phase 6 imports these as animation start points.
 // Tunable: values matched to image.png isometric perspective.
 // ---------------------------------------------------------------------------
-export const CAMERA_POSITION: [number, number, number] = [8, 6, 10];
-export const CAMERA_TARGET: [number, number, number] = [1.2, 2.5, -0.7];
-export const CAMERA_FOV = 45;
+// gaming_setup_v12.glb bbox: min(-4.83, 2, -6.69) / max(7.17, 3.92, 5.31)
+// Desk top surface y≈3.0, monitor top y≈3.9, floor y≈0
+// Reference image.png: camera upper-right, looking down at ~35° — desk top surface
+// clearly visible, monitor faces viewer, chair sits right of desk.
+// Target aimed at desk center (not floor) so camera looks at desk, not ground.
+export const CAMERA_POSITION: [number, number, number] = [6, 6, 8];
+export const CAMERA_TARGET: [number, number, number] = [1.17, 3.2, -0.69];
+export const CAMERA_FOV = 40;
 export const CAMERA_NEAR = 0.1;
 export const CAMERA_FAR = 100;
 
@@ -79,14 +85,15 @@ export default function GameSetupScene() {
       />
 
       {/*
-       * Lighting rig — matches dark purple atmosphere in image.png (UI-SPEC §2).
-       * No env map, no shadows — too heavy for demand-mode frameloop.
+       * Lighting: use only a tiny neutral ambient so the .glb's baked lighting
+       * and emission textures (monitor glow, desk surface) display as authored.
+       * The reference image.png is lit by the .glb's own baked lights —
+       * adding external point lights overexposes the scene.
+       * Keep intensity ≤ 0.15 so baked shadows remain intact.
        */}
-      <ambientLight intensity={0.15} color="#1a0a2e" />
-      <directionalLight position={[5, 8, 5]} intensity={1.2} color="#b8a0ff" castShadow={false} />
-      <directionalLight position={[-3, 4, -5]} intensity={0.4} color="#6040ff" castShadow={false} />
+      <ambientLight intensity={0.12} />
 
-      {/* Model — desk_spot is the root node of gaming_setup_v12.glb. */}
+      {/* Model — rendered centered, no offset (Phase 6 handles scroll positioning) */}
       <primitive object={scene} />
     </>
   );

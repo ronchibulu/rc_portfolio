@@ -28,7 +28,6 @@ import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
 import HeroTyping from '@/components/HeroTyping';
 import SceneCanvas from '@/components/canvas/SceneCanvas';
-import SceneView from '@/components/canvas/SceneView';
 
 const hero = {
   name: "Hi, I'm Ronald.",
@@ -49,8 +48,14 @@ const hero = {
     * client:only="react": no SSR output; canvas hydrates client-side only (AGENTS.md hard rule).
     * NEVER use client:load or client:visible for R3F islands.
     */}
+  {/*
+    * SceneCanvas owns the entire R3F/Drei tree including the hero scene View.
+    * heroViewId links to the tracking div inside the hero section.
+    * View + View.Port must share the same React root (tunnel-rat requirement) —
+    * this is why SceneView is no longer a separate island (Phase 5 fix).
+    */}
   <div class="pointer-events-none fixed inset-0 z-0" aria-hidden="true">
-    <SceneCanvas client:only="react" />
+    <SceneCanvas client:only="react" heroViewId="hero-canvas-view" />
   </div>
 
   <Header />
@@ -59,23 +64,15 @@ const hero = {
     {/* =============== HERO =============== */}
     <section id="hero" class="relative z-10 flex min-h-dvh scroll-mt-16 items-center">
       {/*
-        * Phase 5 — View tracking region.
-        * absolute inset-0: covers the hero section exactly (section is relative z-10).
-        * pointer-events-none: mouse/touch events pass through to hero text and scroll cue.
-        * SceneView reads this div's bounds via document.getElementById('hero-canvas-view').
-        * client:only="react" — hard rule (AGENTS.md): R3F islands never SSR.
+        * Phase 5 — View tracking region covers the full hero section.
+        * The 3D scene fills the entire hero viewport; text overlays on top.
+        * Camera position/angle frames the desk in the center-right of the frame
+        * so it doesn't occlude the left-aligned hero text.
         */}
-      <div id="hero-canvas-view" class="absolute inset-0 pointer-events-none" />
-      <SceneView client:only="react" trackId="hero-canvas-view" />
+      <div id="hero-canvas-view" class="absolute inset-0 pointer-events-none" aria-hidden="true" />
 
-      <div
-        class="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 md:py-24 lg:px-12 lg:py-32"
-      >
-        {/*
-          * client:only="react" — no SSR output for this island, zero hydration mismatch.
-          * HERO-001 (no-JS visibility) is satisfied by the static <noscript> below.
-          * AGENTS.md hard rule: complex React islands use client:only="react".
-          */}
+      <div class="w-full px-4 py-16 sm:px-6 md:py-24 lg:px-12 lg:py-32">
+        <div class="mx-auto max-w-6xl">
         <HeroTyping
           client:only="react"
           name={hero.name}
@@ -99,13 +96,14 @@ const hero = {
             </p>
           </div>
         </noscript>
+        </div>
       </div>
 
-      {/* Scroll cue — anchored bottom-center, bobs via .animate-scrollbob (Plan 01 globals.css). */}
+      {/* Scroll cue — anchored bottom-center, bobs via .animate-scrollbob */}
       <a
         href="#projects"
         aria-label="Scroll to projects"
-        class="absolute bottom-4 left-1/2 inline-flex -translate-x-1/2 animate-scrollbob items-center justify-center rounded-sm p-1 font-pixel text-lg text-yellow-400 transition-colors hover:text-yellow-400 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 md:bottom-6 lg:bottom-8"
+        class="absolute bottom-4 left-1/2 inline-flex -translate-x-1/2 animate-scrollbob items-center justify-center rounded-sm p-1 font-pixel text-lg text-yellow-400 transition-colors hover:text-yellow-400 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black md:bottom-6 lg:bottom-8"
       >
         ▼
       </a>
