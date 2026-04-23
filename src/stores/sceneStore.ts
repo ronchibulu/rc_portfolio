@@ -10,8 +10,26 @@
  */
 import { atom } from 'nanostores';
 
-/** GPU capability tier from detect-gpu. 0 = uninitialised. Set in Phase 10. */
+/**
+ * GPU capability bucket. Semantics:
+ *   0 — uninitialised (detect-gpu has not resolved yet).
+ *   1 — WebGL unsupported → HeroFallback must render instead of SceneCanvas.
+ *   2 — mid-tier device (default "can run scene" bucket).
+ *   3 — high-tier desktop GPU (eligible for DPR up to 2).
+ * Set by GPUDetector (Phase 10). NOTE: mobile phones are NOT forced to tier 1
+ * anymore — modern mobile Safari/Chrome render the scene fine, just at a lower
+ * DPR. Mobile flag lives on $isMobile; WebGL-unsupported is the only fallback.
+ */
 export const $gpuTier = atom<number>(0);
+
+/**
+ * True when detect-gpu flags the device as mobile. Separate from $gpuTier
+ * so SceneCanvas can clamp DPR to [1, 1] on phones without gating the scene
+ * itself. macOS Safari often fails GPU benchmarking (WEBGL_debug_renderer_info
+ * is blocked) — keeping mobile-vs-desktop independent from tier avoids
+ * mis-classifying desktop Safari as low-tier.
+ */
+export const $isMobile = atom<boolean>(false);
 
 /** Normalised scroll progress [0, 1]. Set by GSAP ScrollTrigger ticker in Phase 6. */
 export const $scrollProgress = atom<number>(0);

@@ -1,21 +1,24 @@
 /**
- * Phase 10 — GPUDetector.tsx
+ * GPUDetector — runs detect-gpu on mount, sets $gpuTier + $isMobile nanostores.
  *
- * Runs detect-gpu on mount, sets $gpuTier nanostore.
+ * Semantics (see sceneStore.ts):
+ *   tier 0 — uninitialised.
+ *   tier 1 — WebGL unsupported. Only case where HeroFallback replaces SceneCanvas.
+ *   tier 2 — mid (default "can run" bucket; also for desktop Safari where
+ *            WEBGL_debug_renderer_info is blocked and benchmarking falls back).
+ *   tier 3 — high-tier desktop GPU.
+ *
+ * isMobile is tracked separately so SceneCanvas can lower DPR on phones
+ * without excluding them from the 3D experience. Earlier logic forced
+ * isMobile → tier 1, which wrongly routed every phone AND desktop Safari
+ * (blocked renderer info → fallback tier) to HeroFallback.
+ *
  * Returns null — pure side-effect island.
- *
- * Tier mapping (detect-gpu):
- *  0 — BENCHMARKS_NOT_FOUND / error (treat as mid)
- *  1 — low-tier (mobile budget / no WebGL support)
- *  2 — mid-tier
- *  3 — high-tier
- *
- * Also respects isMobile from detect-gpu. When isMobile=true → treat as tier 1.
  *
  * Requirement: MOBILE-001, MOBILE-002
  */
 
-import { $gpuTier } from '@/stores';
+import { $gpuTier, $isMobile } from '@/stores';
 import { useEffect } from 'react';
 
 export default function GPUDetector() {
@@ -28,11 +31,21 @@ export default function GPUDetector() {
         const result = await getGPUTier();
         if (cancelled) return;
 
-        // isMobile OR tier ≤ 1 → set tier 1 (fallback path)
-        const tier = result.isMobile || result.tier <= 1 ? 1 : result.tier;
-        $gpuTier.set(tier);
+        $isMobile.set(!!result.isMobile);
+
+        if (result.type === 'WEBGL_UNSUPPORTED') {
+          // Only true blocker — no WebGL, scene cannot render.
+          $gpuTier.set(1);
+          return;
+        }
+
+        // Everything else runs the scene. Tier 3 only for confidently-benchmarked
+        // high-end GPUs; otherwise default to 2 so Safari / mobile / fallback
+        // detections still render the scene at mid DPR.
+        $gpuTier.set(result.tier >= 3 ? 3 : 2);
       } catch {
-        // Detection failed — leave $gpuTier at 0 (treated as mid in SceneCanvas)
+        // Detection threw — leave $gpuTier at 0. SceneCanvas treats 0 as
+        // "try to render" (same default as tier 2).
       }
     }
 

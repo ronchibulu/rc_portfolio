@@ -21,8 +21,10 @@
  *    first time at t=0 of the pixel reveal, not mid-load.
  *
  * Guards:
- *  - Low-tier GPU (mobile fallback) — SceneCanvas returns null and $sceneReady
- *    never flips. Short-circuit to `done` so mobile isn't stuck on LOADING.
+ *  - WebGL unsupported (tier 1) — SceneCanvas returns null and $sceneReady
+ *    never flips. Short-circuit to `done` so the fallback path isn't stuck on
+ *    LOADING. Mobile / Safari no longer trigger this short-circuit; they run
+ *    the canvas and flip $sceneReady normally.
  *  - prefers-reduced-motion: PixelReveal already completes instantly via its
  *    own guard, so we still go through the same state machine without a long
  *    reveal animation.
@@ -76,7 +78,7 @@ export default function PageIntro() {
     };
   }, []);
 
-  // Low-tier GPU short-circuit — SceneCanvas never mounts on tier 1, so
+  // WebGL-unsupported short-circuit — SceneCanvas never mounts on tier 1, so
   // $sceneReady would never flip. Skip straight to done once detection resolves.
   useEffect(() => {
     if (gpuTier === 1 && phase !== 'done') {

@@ -19,7 +19,7 @@
  *   - Single canvas. Drei <View.Port> and all <View> regions live in this root.
  *   - gl={{ alpha: true }} keeps the canvas transparent — body bg-zinc-950 shows through.
  */
-import { $gpuTier } from '@/stores';
+import { $gpuTier, $isMobile } from '@/stores';
 import { useStore } from '@nanostores/react';
 import { useGLTF } from '@react-three/drei/core/Gltf.js';
 // Use direct sub-path imports to avoid pre-bundling the entire @react-three/drei
@@ -72,14 +72,17 @@ export default function SceneCanvas({ heroViewId = 'hero-canvas-view' }: SceneCa
     typeof document !== 'undefined' ? document.getElementById(heroViewId) : null,
   );
 
-  // Phase 10 — GPU-tier adaptive DPR (MOBILE-002):
-  //  tier 0 (unknown) or 3 (high) → [1, 2]
-  //  tier 2 (mid)                 → [1, 1.5]
-  //  tier 1 (low/mobile)          → [1, 1] (minimal resource usage)
+  // Adaptive DPR (MOBILE-002). Mobile flag is independent from tier so phones
+  // still render the scene, just at DPR [1, 1] for a tighter pixel budget.
+  //   tier 3 desktop → [1, 2]
+  //   tier 2 desktop / tier 0 unknown → [1, 1.5]
+  //   mobile (any tier ≥ 2) → [1, 1]
   const gpuTier = useStore($gpuTier);
-  const dpr: [number, number] = gpuTier === 2 ? [1, 1.5] : gpuTier === 1 ? [1, 1] : [1, 2];
+  const isMobile = useStore($isMobile);
+  const dpr: [number, number] = isMobile ? [1, 1] : gpuTier === 3 ? [1, 2] : [1, 1.5];
 
-  // Phase 10 — Skip canvas entirely on low-tier / mobile (tier 1)
+  // Skip canvas only when WebGL is genuinely unsupported (tier 1).
+  // Mobile + desktop Safari are handled via DPR, not exclusion.
   if (gpuTier === 1) return null;
 
   return (

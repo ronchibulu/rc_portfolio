@@ -1,12 +1,7 @@
 /**
- * Phase 10 — HeroFallback.tsx
- *
- * Shown instead of the 3D scroll narrative on low-tier GPU / mobile devices.
- * Replaces the pinned scroll section with a simple styled static section.
- *
- * Displayed when $gpuTier === 1 (low-tier or isMobile=true from detect-gpu).
- * On tier 0 (unknown), the 3D canvas is still shown — fallback only activates
- * when GPU detection explicitly identifies a low-tier device.
+ * HeroFallback — static section shown only when WebGL is unsupported
+ * (tier === 1). Mobile and desktop Safari still get the full 3D scene;
+ * fallback is reserved for devices where the canvas literally cannot run.
  *
  * Requirement: MOBILE-001, MOBILE-003
  */
@@ -17,8 +12,8 @@ import { useStore } from '@nanostores/react';
 export default function HeroFallback() {
   const gpuTier = useStore($gpuTier);
 
-  // Only show fallback when GPU is definitively low-tier (tier === 1)
-  // tier 0 = unknown → let 3D canvas try; tier 2/3 = mid/high → keep 3D
+  // tier 1 is now exclusively "WebGL unsupported". Everything else (0 unknown,
+  // 2 mid, 3 high, including mobile) renders the scene.
   if (gpuTier !== 1) return null;
 
   return (
@@ -29,7 +24,7 @@ export default function HeroFallback() {
       {/* Decorative gradient background */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950"
+        className="pointer-events-none absolute inset-0 bg-linear-to-b from-zinc-950 via-zinc-900 to-zinc-950"
       />
       {/* Purple grid accent */}
       <div
