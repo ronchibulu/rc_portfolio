@@ -33,6 +33,13 @@ export interface WindowProps {
   ariaLabel?: string;
   /** Stacking context for layered windows (e.g. detail over folder). */
   z?: 30 | 40 | 50 | 60;
+  /** Numeric z-index override — when provided, takes precedence over `z`.
+   *  Used by OSScreen to drive click-to-focus stacking among open windows. */
+  zIndex?: number;
+  /** Fires on pointer-down anywhere within the window (capture phase, so
+   *  child stopPropagation calls don't suppress it). OSScreen uses this to
+   *  bump the window's focus stamp and bring it to the top of the stack. */
+  onFocus?: () => void;
   /** Optional element rendered on the right edge of the title bar
    *  (e.g. mode toggle, status chip). Pointer events inside this slot
    *  are isolated so clicks don't start a title-bar drag. */
@@ -56,6 +63,8 @@ export default function Window({
   size = 'lg',
   ariaLabel,
   z = 30,
+  zIndex,
+  onFocus,
   headerRight,
   disableToggleMaximize = false,
 }: WindowProps) {
@@ -104,10 +113,12 @@ export default function Window({
     <div
       aria-hidden={minimized}
       className={`pointer-events-none fixed inset-0 flex items-center justify-center p-4 ${zClass}`}
+      style={zIndex !== undefined ? { zIndex } : undefined}
     >
       <motion.div
         role="dialog"
         aria-label={ariaLabel ?? title}
+        onPointerDownCapture={onFocus}
         initial={reducedMotion ? false : { opacity: 0, scale: 0.95 }}
         animate={{
           opacity: minimized ? 0 : 1,

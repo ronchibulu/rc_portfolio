@@ -22,6 +22,7 @@ import HeroFallback from '@/components/HeroFallback';
 import NavTransition from '@/components/NavTransition';
 import OSScreen from '@/components/OSScreen';
 import PageIntro from '@/components/PageIntro';
+import PixelCursor from '@/components/PixelCursor';
 import Footer from '@/components/Footer.astro';
 import Header from '@/components/Header.astro';
 import HeroTyping from '@/components/HeroTyping';
@@ -332,6 +333,15 @@ const hero = {
     <div id="contact" class="h-0 overflow-hidden" aria-hidden="true" />
     <OSScreen client:only="react" />
   </main>
+
+  {/* ===== PIXEL CURSOR TRAIL =====
+    * Chunky 8-bit trail rendered on a fixed canvas (z-50). Pairs with the
+    * static pixel-arrow.png sprite set as the OS cursor in globals.css.
+    * Self-gates on prefers-reduced-motion, (pointer: coarse), and tier 1
+    * GPU. Mounted after OSScreen so it paints above the OS shell while
+    * staying below NavTransition (z 70) and PageIntro boot cover (z 60).
+    */}
+  <PixelCursor client:only="react" />
 
   <Footer />
 </BaseLayout>

@@ -24,6 +24,8 @@ interface ProjectDialogProps {
   project: Project | null;
   minimized: boolean;
   maximized: boolean;
+  zIndex?: number;
+  onFocus?: () => void;
   onClose: () => void;
   onMinimize: () => void;
   onToggleMaximize: () => void;
@@ -33,6 +35,8 @@ export default function ProjectDialog({
   project,
   minimized,
   maximized,
+  zIndex,
+  onFocus,
   onClose,
   onMinimize,
   onToggleMaximize,
@@ -47,6 +51,8 @@ export default function ProjectDialog({
       ariaLabel={`${project.name} — project details`}
       size="lg"
       z={40}
+      zIndex={zIndex}
+      onFocus={onFocus}
       minimized={minimized}
       maximized={maximized}
       onClose={onClose}

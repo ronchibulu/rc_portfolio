@@ -135,6 +135,32 @@ export default function OSScreen() {
   const [contactMaximized, setContactMaximized] = useState(false);
 
   // ---------------------------------------------------------------------------
+  // Per-window focus stamps drive click-to-front stacking. Each open window
+  // owns a numeric stamp; the highest stamp renders on top. `bringToFront`
+  // bumps a monotonic counter and assigns it to the clicked window.
+  //
+  // Stamp values only need to order windows relative to each other inside the
+  // OSScreen stacking context (the `z-50` wrapper). ImageViewerWindow and
+  // NavTransition both portal to <body>, so they sit outside this context and
+  // remain above regardless of how high the counter climbs.
+  // ---------------------------------------------------------------------------
+  const focusCounterRef = useRef(33);
+  const [projectsZ, setProjectsZ] = useState(30);
+  const [projectZ, setProjectZ] = useState(31);
+  const [aboutZ, setAboutZ] = useState(32);
+  const [contactZ, setContactZ] = useState(33);
+
+  type WindowKey = 'projects' | 'project' | 'about' | 'contact';
+  function bringToFront(key: WindowKey) {
+    focusCounterRef.current += 1;
+    const next = focusCounterRef.current;
+    if (key === 'projects') setProjectsZ(next);
+    else if (key === 'project') setProjectZ(next);
+    else if (key === 'about') setAboutZ(next);
+    else setContactZ(next);
+  }
+
+  // ---------------------------------------------------------------------------
   // Phase 12 — PixelReveal intro.
   //
   // Plays a chunky 8-bit dissolve once per session when the OSScreen first
@@ -233,32 +259,39 @@ export default function OSScreen() {
     if (osIntent === 'projects') {
       setProjectsOpen(true);
       setProjectsMinimized(false);
+      bringToFront('projects');
     } else if (osIntent === 'about') {
       setAboutOpen(true);
       setAboutMinimized(false);
+      bringToFront('about');
     } else if (osIntent === 'contact') {
       setContactOpen(true);
       setContactMinimized(false);
+      bringToFront('contact');
     }
     $osIntent.set(null);
   }, [activeSection, osIntent]);
 
   if (activeSection !== 'os') return null;
 
-  // ── Open handlers — ensure a freshly-opened window starts un-minimized. ──
+  // ── Open handlers — ensure a freshly-opened window starts un-minimized
+  //    and is promoted to the top of the stack. ──
   function handleOpenProjects() {
     setProjectsOpen(true);
     setProjectsMinimized(false);
+    bringToFront('projects');
   }
 
   function handleOpenAboutMe() {
     setAboutOpen(true);
     setAboutMinimized(false);
+    bringToFront('about');
   }
 
   function handleOpenContact() {
     setContactOpen(true);
     setContactMinimized(false);
+    bringToFront('contact');
   }
 
   // ── Close handlers — reset chrome state so next open is clean. ──
@@ -284,6 +317,49 @@ export default function OSScreen() {
     setContactOpen(false);
     setContactMinimized(false);
     setContactMaximized(false);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Dock tab click — taskbar semantics. If the window is minimized, restore
+  // and bring it to the front. If it's already the top window, minimize it.
+  // Otherwise (visible but behind another), bring it to the front.
+  // ---------------------------------------------------------------------------
+  const topZ = Math.max(projectsZ, projectZ, aboutZ, contactZ);
+
+  function handleDockTabClick(key: WindowKey) {
+    const stamp =
+      key === 'projects'
+        ? projectsZ
+        : key === 'project'
+          ? projectZ
+          : key === 'about'
+            ? aboutZ
+            : contactZ;
+    const minimized =
+      key === 'projects'
+        ? projectsMinimized
+        : key === 'project'
+          ? projectMinimized
+          : key === 'about'
+            ? aboutMinimized
+            : contactMinimized;
+
+    if (minimized) {
+      if (key === 'projects') setProjectsMinimized(false);
+      else if (key === 'project') setProjectMinimized(false);
+      else if (key === 'about') setAboutMinimized(false);
+      else setContactMinimized(false);
+      bringToFront(key);
+      return;
+    }
+    if (stamp >= topZ) {
+      if (key === 'projects') setProjectsMinimized(true);
+      else if (key === 'project') setProjectMinimized(true);
+      else if (key === 'about') setAboutMinimized(true);
+      else setContactMinimized(true);
+      return;
+    }
+    bringToFront(key);
   }
 
   const hasAnyTab = projectsOpen || selectedProject !== null || aboutOpen || contactOpen;
@@ -388,7 +464,7 @@ export default function OSScreen() {
                   key="projects"
                   title="PROJECTS"
                   minimized={projectsMinimized}
-                  onToggle={() => setProjectsMinimized((m) => !m)}
+                  onToggle={() => handleDockTabClick('projects')}
                 />
               )}
               {selectedProject && (
@@ -396,7 +472,7 @@ export default function OSScreen() {
                   key={`project-${selectedProject.slug}`}
                   title={selectedProject.name}
                   minimized={projectMinimized}
-                  onToggle={() => setProjectMinimized((m) => !m)}
+                  onToggle={() => handleDockTabClick('project')}
                 />
               )}
               {aboutOpen && (
@@ -404,7 +480,7 @@ export default function OSScreen() {
                   key="about"
                   title="ABOUT ME"
                   minimized={aboutMinimized}
-                  onToggle={() => setAboutMinimized((m) => !m)}
+                  onToggle={() => handleDockTabClick('about')}
                 />
               )}
               {contactOpen && (
@@ -412,7 +488,7 @@ export default function OSScreen() {
                   key="contact"
                   title="CONTACT"
                   minimized={contactMinimized}
-                  onToggle={() => setContactMinimized((m) => !m)}
+                  onToggle={() => handleDockTabClick('contact')}
                 />
               )}
             </AnimatePresence>
@@ -426,6 +502,8 @@ export default function OSScreen() {
         open={projectsOpen}
         minimized={projectsMinimized}
         maximized={projectsMaximized}
+        zIndex={projectsZ}
+        onFocus={() => bringToFront('projects')}
         onClose={handleCloseProjects}
         onMinimize={() => setProjectsMinimized(true)}
         onToggleMaximize={() => setProjectsMaximized((m) => !m)}
@@ -436,6 +514,7 @@ export default function OSScreen() {
           setSelectedProject(project);
           setProjectMinimized(false);
           setProjectMaximized(false);
+          bringToFront('project');
         }}
       />
 
@@ -444,6 +523,8 @@ export default function OSScreen() {
         project={selectedProject}
         minimized={projectMinimized}
         maximized={projectMaximized}
+        zIndex={projectZ}
+        onFocus={() => bringToFront('project')}
         onClose={handleCloseProject}
         onMinimize={() => setProjectMinimized(true)}
         onToggleMaximize={() => setProjectMaximized((m) => !m)}
@@ -454,6 +535,8 @@ export default function OSScreen() {
         open={aboutOpen}
         minimized={aboutMinimized}
         maximized={aboutMaximized}
+        zIndex={aboutZ}
+        onFocus={() => bringToFront('about')}
         onClose={handleCloseAbout}
         onMinimize={() => setAboutMinimized(true)}
         onToggleMaximize={() => setAboutMaximized((m) => !m)}
@@ -464,6 +547,8 @@ export default function OSScreen() {
         open={contactOpen}
         minimized={contactMinimized}
         maximized={contactMaximized}
+        zIndex={contactZ}
+        onFocus={() => bringToFront('contact')}
         onClose={handleCloseContact}
         onMinimize={() => setContactMinimized(true)}
         onToggleMaximize={() => setContactMaximized((m) => !m)}

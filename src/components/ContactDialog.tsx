@@ -13,6 +13,8 @@ interface ContactDialogProps {
   open: boolean;
   minimized: boolean;
   maximized: boolean;
+  zIndex?: number;
+  onFocus?: () => void;
   onClose: () => void;
   onMinimize: () => void;
   onToggleMaximize: () => void;
@@ -26,6 +28,8 @@ export default function ContactDialog({
   open,
   minimized,
   maximized,
+  zIndex,
+  onFocus,
   onClose,
   onMinimize,
   onToggleMaximize,
@@ -38,6 +42,8 @@ export default function ContactDialog({
       ariaLabel="Contact information"
       size="md"
       z={40}
+      zIndex={zIndex}
+      onFocus={onFocus}
       minimized={minimized}
       maximized={maximized}
       onClose={onClose}

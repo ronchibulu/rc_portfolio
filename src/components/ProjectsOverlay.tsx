@@ -23,6 +23,8 @@ interface ProjectsOverlayProps {
   open: boolean;
   minimized: boolean;
   maximized: boolean;
+  zIndex?: number;
+  onFocus?: () => void;
   onClose: () => void;
   onMinimize: () => void;
   onToggleMaximize: () => void;
@@ -33,6 +35,8 @@ export default function ProjectsOverlay({
   open,
   minimized,
   maximized,
+  zIndex,
+  onFocus,
   onClose,
   onMinimize,
   onToggleMaximize,
@@ -46,6 +50,8 @@ export default function ProjectsOverlay({
       ariaLabel="Projects folder"
       size="lg"
       z={30}
+      zIndex={zIndex}
+      onFocus={onFocus}
       minimized={minimized}
       maximized={maximized}
       onClose={onClose}
