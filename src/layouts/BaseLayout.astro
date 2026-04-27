@@ -3,6 +3,8 @@
 // Side-effect imports below are the ONLY place fontsource and globals.css are imported.
 // Any other file importing them would cause double-registration (PITFALLS §8).
 import '@fontsource/press-start-2p';
+import '@fontsource/noto-sans/400.css';
+import '@fontsource/noto-sans/500.css';
 import '../styles/globals.css';
 
 interface Props {
@@ -12,8 +14,8 @@ interface Props {
 }
 
 const {
-  title = 'Ronald Cheng — Senior Software Engineer and Full-Stack Developer',
-  description = 'Portfolio of Ronald Cheng — Senior Software Engineer and Full-Stack Developer specialising in full-stack development and AI-powered applications. React, Next.js, Astro, Three.js, LangChain.',
+  title = 'Ronald Cheng — Senior Full-Stack Software Engineer',
+  description = 'Portfolio of Ronald Cheng — Senior Full-Stack Software Engineer specialising in full-stack development and AI-powered applications. React, Next.js, Astro, Three.js, LangChain.',
   ogImage = '/og-image.png',
 } = Astro.props;
 
@@ -40,7 +42,7 @@ const canonicalURL = Astro.site
     <meta property="og:description" content={description} />
     {canonicalURL && <meta property="og:url" content={canonicalURL} />}
     <meta property="og:image" content={ogImage} />
-    <meta property="og:image:alt" content="Ronald Cheng — Senior Software Engineer and Full-Stack Developer portfolio" />
+    <meta property="og:image:alt" content="Ronald Cheng — Senior Full-Stack Software Engineer portfolio" />
     <meta property="og:locale" content="en_HK" />
 
     {/* Twitter/X Card */}

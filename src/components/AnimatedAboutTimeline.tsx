@@ -186,7 +186,7 @@ export default function AnimatedAboutTimeline() {
           stage spans the full width (cards center in the viewport); on
           md+ we reserve the right gutter for the timeline overlay. */}
       <div
-        className="absolute inset-y-0 left-0 right-0 md:right-40"
+        className="absolute left-4 right-4 top-14 bottom-14 md:inset-y-0 md:left-0 md:right-40"
         style={{
           perspective: `${PERSPECTIVE}px`,
           perspectiveOrigin: '50% 50%',
@@ -215,7 +215,7 @@ export default function AnimatedAboutTimeline() {
           transition={{ delay: 0.3, duration: 0.35 }}
           className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2"
         >
-          <span className="font-pixel text-xs text-zinc-500">
+          <span className="whitespace-nowrap font-pixel text-xs text-zinc-500">
             scroll ▾ to continue
           </span>
         </motion.div>
@@ -335,15 +335,16 @@ function SideTimeline({ activeIdx, onJump, reducedMotion }: SideTimelineProps) {
       <ol className="flex list-none flex-col gap-2 p-0">
         {JOBS.map((j, i) => {
           const active = i === activeIdx;
+          const label = shortLabel(j.title);
           return (
-            <li key={`${j.company}-${j.period}`}>
+            <li key={`${j.company}-${j.period}`} className="relative">
               <button
                 type="button"
                 onClick={() => onJump(i, i > activeIdx ? 1 : -1)}
                 aria-current={active ? 'step' : undefined}
                 aria-label={`Go to slide ${i + 1}: ${j.title} at ${j.company}`}
                 className={[
-                  'group flex w-full items-center gap-2 rounded-sm px-1 py-0.5',
+                  'peer side-typewriter-trigger group flex w-full items-center gap-2 rounded-sm px-1 py-0.5',
                   'font-pixel text-xs',
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400',
                 ].join(' ')}
@@ -357,16 +358,50 @@ function SideTimeline({ activeIdx, onJump, reducedMotion }: SideTimelineProps) {
                     active && !reducedMotion ? 'animate-pulse' : '',
                   ].join(' ')}
                 />
-                <span
-                  className={[
-                    'truncate transition-all',
-                    active ? 'text-zinc-100' : 'text-zinc-500 group-hover:text-zinc-300',
-                    active ? 'max-w-40' : 'max-w-0 overflow-hidden group-hover:max-w-40',
-                  ].join(' ')}
-                >
-                  {shortLabel(j.title)}
+                {/* Label stack: ghost layer is always rendered (low
+                    opacity for inactive items), and a full-opacity
+                    overlay is clipped from the right. Hover/focus on
+                    the trigger sweeps the clip to 0% via .side-typewriter
+                    in globals.css — typewriter feel without touching
+                    layout. Active items keep the overlay fully revealed. */}
+                <span className="relative block w-40 max-w-40">
+                  <span
+                    className={[
+                      'block w-full truncate transition-opacity duration-300',
+                      active
+                        ? 'text-zinc-100 opacity-100'
+                        : 'text-zinc-400 opacity-40',
+                    ].join(' ')}
+                  >
+                    {label}
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    className={[
+                      'pointer-events-none absolute inset-0 w-full truncate text-zinc-100',
+                      active ? 'side-typewriter side-typewriter-active' : 'side-typewriter',
+                    ].join(' ')}
+                  >
+                    {label}
+                  </span>
                 </span>
               </button>
+
+              {/* Hover/focus tooltip — full untruncated title, pinned
+                  above the trigger. peer-* drives visibility from the
+                  sibling button so keyboard focus reveals it too. */}
+              <span
+                role="tooltip"
+                className={[
+                  'pointer-events-none absolute bottom-full right-0 z-10 mb-2',
+                  'whitespace-nowrap rounded-sm border border-purple-400/40 bg-zinc-950/95 px-2 py-1',
+                  'font-pixel text-xs text-zinc-100 shadow-lg',
+                  'opacity-0 transition-opacity duration-150',
+                  'peer-hover:opacity-100 peer-focus-visible:opacity-100',
+                ].join(' ')}
+              >
+                {j.title}
+              </span>
             </li>
           );
         })}

@@ -24,21 +24,21 @@ export interface CompanyBlock {
 
 export const TIMELINE: CompanyBlock[] = [
   {
-    company: "Pints AI",
-    periodRange: "Mar 2026 – Present",
+    company: 'Pints AI',
+    periodRange: 'Mar 2026 – Present',
     entries: [
       {
         period: 'Mar 2026 – Present',
         title: 'Senior Software Engineer',
         highlights: [
-          "Developed the technical product end-to-end across frontend and backend.",
-          "Architected, implemented, and oversaw AI/ML model training pipelines and deployment workflows, including production-level release processes.",
-          "Designed and planned software architecture, wrote unit tests, and supported User Acceptance Testing (UAT) as required.",
-          "Assisted in project management and, where assigned, mentored/supervised team members and conducted code reviews.",
-          "Built and implemented AIOps for BEA, and developed an in-house AI solution platform to manage, build, and deploy AI agents at production scale.",
+          'Developed the technical product end-to-end across frontend and backend, delivering core modules that serve 100+ enterprise users.',
+          'Architected, implemented, and oversaw AI/ML model training pipelines and deployment workflows, including production-level release processes, reducing model deployment time by 90%.',
+          'Designed and planned software architecture, wrote unit tests, and supported User Acceptance Testing (UAT) as required.',
+          'Assisted in project management and, where assigned, mentored/supervised team members and conducted code reviews.',
+          'Built and implemented AIOps for BEA, and developed an in-house AI solution platform to manage, build, and deploy AI agents at production scale, reducing agent deployment time by 90%.',
         ],
       },
-    ]
+    ],
   },
   {
     company: 'Hypthon',
@@ -48,27 +48,26 @@ export const TIMELINE: CompanyBlock[] = [
         period: 'Apr 2025 – Dec 2025',
         title: 'Senior Full-Stack Developer — AI Innovation',
         highlights: [
-          'Mentored junior developers and owned Agile SDLC ceremonies',
-          'Led AI SaaS platform with LangGraph, LangChain, and LangSmith',
-          'Architected multi-agent orchestration and RAG pipelines',
+          'Mentored 2+ junior developers per project, drove architectural decisions for scalable AI-infused systems serving 10+ enterprise clients, and delivered 10+ production projects.',
+          'Led innovation initiatives for AI-enhanced web/mobile platforms, focusing on productivity tools, content generation, and data-driven decision-making that improved client workflow efficiency by 50%.',
+          'Developed AI SaaS platform for enterprise-level chatbots, marketing AI agents and more using LangGraph, LangChain, and LangSmith in Python and Next.js, while managing the full Agile SDLC process.',
         ],
       },
       {
         period: 'Oct 2023 – Apr 2025',
         title: 'Full-Stack Developer',
         highlights: [
-          'Cloud-based solutions with Laravel, .NET, FastAPI, and Next.js',
-          'Migrated CI/CD pipelines from GitLab to GitHub Actions',
-          'Multi-cloud deployments across AWS + Azure',
+          'Full-stack development with cloud-based solutions for 10+ clients across multiple sectors using backend frameworks such as Laravel, .NET, FastAPI, and Next.js.',
+          'End-to-end project delivery, including writing technical documents, requirement analysis, coding, testing, deployment, and post-launch optimisations.',
+          'Led the migration and standardisation of CI/CD workflows across GitLab CI/CD and GitHub Actions, automating builds and deployments to multi-cloud (AWS + Azure) and cutting deployment time by 80%.',
         ],
       },
       {
         period: 'Apr 2022 – Oct 2023',
         title: 'Web Developer',
         highlights: [
-          'Delivered frontend for property, insurance, and banking clients',
-          'Built interactive UIs with React, Vue, Angular, and TailwindCSS',
-          'Led cross-browser a11y audits and performance optimisations',
+          'Front-end development for 10+ client websites across property, insurance, banking and other sectors — delivering responsive, user-centric interfaces and achieving 95+ Lighthouse performance scores on key pages.',
+          'Implemented frontend layouts with a range of frameworks, including React, TypeScript, Angular, Vue, and Tailwind CSS.',
         ],
       },
     ],
@@ -81,9 +80,9 @@ export const TIMELINE: CompanyBlock[] = [
         period: 'May 2021 – Mar 2022',
         title: 'Software Engineer & Web Developer',
         highlights: [
-          'Built and maintained PHP-based websites for enterprise clients',
-          'Developed cybersecurity training platform using Ansible and Apache',
-          'Delivered full-stack solutions in agile team environment',
+          'Implemented multiple company websites in PHP for both internal and tutorial use cases.',
+          'Developed a cybersecurity training platform using Ansible, Apache, and related tooling.',
+          'Handled disparate project documentation, including design specifications and technical write-ups.',
         ],
       },
     ],

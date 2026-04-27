@@ -14,6 +14,7 @@
  *   section#hero       — sticky top-0 h-dvh, stays fixed while outer scrolls.
  *   At 100% scroll the pin releases and #projects snaps into view (hard cut).
  */
+import AIAgentChat from '@/components/AIAgentChat';
 import CenterTextReveal from '@/components/CenterTextReveal';
 import ScrollNarrative from '@/components/canvas/ScrollNarrative';
 import SceneCanvas from '@/components/canvas/SceneCanvas';
@@ -30,7 +31,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 
 const hero = {
   name: "Hi, I'm Ronald.",
-  role: 'Senior Software Engineer and Full-Stack Developer',
+  role: 'Senior Full-Stack Software Engineer',
   tagline: 'Shipping pixel-sharp applications with purpose.',
 };
 ---
@@ -238,6 +239,31 @@ const hero = {
       aria-hidden="true"
       class="pointer-events-none fixed inset-0 z-10 bg-black opacity-0"
     />
+
+    {/* =============== AI AGENT CHAT SCENE =============== */}
+    {/*
+      * AIAgentChat is a FIXED viewport-centered overlay (a sibling of
+      * #fly-blackout — not a child of the pin below). The pin itself is
+      * a pure scroll spacer: its only job is to give the chat scene some
+      * scroll distance to "live" across before #post-flyin-pin takes over.
+      *
+      * Why fixed instead of sticky: a sticky stage inside the pin would
+      * make the chat slide up from the viewport bottom as the pin's top
+      * approaches the viewport top. We want the chat to materialise in
+      * the centre of the screen the moment the camera fly-in completes,
+      * so the overlay is detached from layout flow and faded in/out by
+      * GSAP onEnter/onLeave on the pin's boundaries.
+      *
+      * Pin height 250dvh = ~1.5 viewports of scroll — enough for the
+      * cascade (~3-4s of streamed text) plus a beat of reading time.
+      */}
+    <AIAgentChat client:only="react" />
+    <div
+      id="ai-agent-pin"
+      class="relative z-10 min-h-[250dvh]"
+      aria-hidden="true"
+    ></div>
+    {/* ── End #ai-agent-pin ── */}
 
     {/* =============== POST-FLYIN TEXT REVEAL — Phase 12 =============== */}
     {/*

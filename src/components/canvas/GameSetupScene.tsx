@@ -1,4 +1,5 @@
-import { $sceneReady, $scrollProgress } from '@/stores';
+import { $isMobile, $sceneReady, $scrollProgress } from '@/stores';
+import { useStore } from '@nanostores/react';
 import { useGSAP } from '@gsap/react';
 import { useGLTF } from '@react-three/drei/core/Gltf.js';
 import { PerspectiveCamera } from '@react-three/drei/core/PerspectiveCamera.js';
@@ -96,6 +97,19 @@ useGLTF.preload('/models/computer_room.glb');
 // Allocate Vector3 instances outside any hook/frame to avoid per-frame GC.
 // ---------------------------------------------------------------------------
 const _startTarget = new THREE.Vector3(...CAMERA_TARGET);
+// Mobile-only initial aim target — pulled UP in world Y and slightly LEFT in
+// world X so the camera tilts upward + leftward, dropping the scene into the
+// bottom-right of the frame (clear of the vertically-centered hero text).
+// Y lift is the dominant shift; X shift is tiny because mobile portrait aspect
+// gives a very narrow horizontal FOV (~9°) and over-shifting throws the model
+// off-screen. The lerp toward _midTarget across t∈[0,0.25] smooths the shift
+// back to desktop framing as the chair-aim phase begins, so the chair →
+// monitor fly-in sequence is identical to desktop after t≥0.25.
+const _startTargetMobile = new THREE.Vector3(
+  CAMERA_TARGET[0] + 1.5,
+  CAMERA_TARGET[1] + 2.7,
+  CAMERA_TARGET[2],
+);
 // Chair world pos — CHAIR_CONTROLLER local [2.1, 2.8, -0.8] + scene group offset [3, 1.5, 0].
 const _midTarget = new THREE.Vector3(5.1, 4.3, -0.8);
 const _endTarget = new THREE.Vector3(...CAMERA_END_TARGET);
@@ -176,6 +190,7 @@ export function SceneLoader() {
 export default function GameSetupScene() {
   const { scene, animations } = useGLTF('/models/computer_room.glb');
   const { camera, invalidate } = useThree();
+  const isMobile = useStore($isMobile);
 
   // Plain JS ref — GSAP writes value [0,1], useFrame reads it (Pitfall §9 single-writer rule).
   const cameraProgress = useRef({ value: 0 });
@@ -370,10 +385,13 @@ export default function GameSetupScene() {
       }
     });
 
-    camera.lookAt(new THREE.Vector3(...CAMERA_TARGET));
+    // Mobile: aim at the raised target so the scene drops into the lower half
+    // of the viewport before any scroll occurs (matches the t=0 branch in
+    // useFrame). Desktop uses the desk-level target as before.
+    camera.lookAt(isMobile ? _startTargetMobile : new THREE.Vector3(...CAMERA_TARGET));
     invalidate();
     $sceneReady.set(true);
-  }, [camera, invalidate, scene]);
+  }, [camera, invalidate, scene, isMobile]);
 
   // ---------------------------------------------------------------------------
   // Phase 6 — GSAP ScrollTrigger camera fly-in.
@@ -492,10 +510,14 @@ export default function GameSetupScene() {
       //   t 0.00→0.25 — seg1 position (first half). Aim lerps startTarget → chair.
       //   t 0.25→0.50 — seg1 position (second half). Aim pivots chair → monitor.
       //   t 0.50→1.00 — seg2 position (all). Aim stays on monitor.
+      // Mobile uses _startTargetMobile (raised Y) so the scene composes in the
+      // lower portion of the viewport at progress 0 without overlapping hero
+      // text. The shift unwinds during t∈[0,0.25] as aim lerps to the chair.
+      const startVec = isMobile ? _startTargetMobile : _startTarget;
       if (t < 0.25) {
         const s = t * 2;                 // 0 → 0.5 of curve1
         _curve1.getPoint(s, _tmpPos);
-        _tmpTarget.lerpVectors(_startTarget, _midTarget, t * 4); // 0 → 1
+        _tmpTarget.lerpVectors(startVec, _midTarget, t * 4); // 0 → 1
       } else if (t < 0.5) {
         const s = t * 2;                 // 0.5 → 1 of curve1
         _curve1.getPoint(s, _tmpPos);
@@ -557,8 +579,15 @@ export default function GameSetupScene() {
        * A very dim violet ambientLight provides fill so surfaces outside the
        * direct cones are still readable (matches Blender's world background
        * of (0.01, 0.005, 0.02) @ strength 0.05).
+       *
+       * Mobile bumps ambient + adds a soft hemispheric fill so the chair and
+       * monitor read clearly inside the smaller bottom-half scissor (the
+       * #hero-canvas-view rect shrinks to h-1/2 on mobile per index.astro).
        */}
-      <ambientLight color="#2a1f45" intensity={0.18} />
+      <ambientLight color="#2a1f45" intensity={isMobile ? 0.32 : 0.18} />
+      {isMobile && (
+        <hemisphereLight color="#a78bfa" groundColor="#1a0f2e" intensity={0.25} />
+      )}
 
       {/* Model at world origin — layout separation handled by right-half canvas view. */}
       <group position={[3.0, 1.5, 0]}>

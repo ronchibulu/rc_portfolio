@@ -38,7 +38,7 @@ type Line = {
 const LINES: ReadonlyArray<Line> = [
   { text: 'Full-Stack · Software Engineer · AI', tone: 'bright' },
   { text: '5 years shipping production-grade webapps', tone: 'muted' },
-  { text: 'Obsessed with frontend craft.', tone: 'muted', accentWord: 'craft.' },
+  // { text: 'Obsessed with frontend craft.', tone: 'muted', accentWord: 'craft.' },
   { text: 'Welcome to RC.OS_', tone: 'bright', accentWord: 'RC.OS_' },
 ];
 
@@ -212,38 +212,23 @@ export default function CenterTextReveal() {
     );
   });
 
-  // Layout rationale:
-  //   The first line is absolutely positioned at `top: 50%` with
-  //   `-translate-y-1/2`, which pins its geometric center exactly to the
-  //   stage's vertical midpoint — no reliance on flex space-distribution or
-  //   content measurement. The remaining lines are absolutely positioned at
-  //   `top: 50%` too and push downward via `pt-*` so they flow below the
-  //   first line without overlap.
+  // Layout: whole 4-line block centered vertically within the sticky stage
+  // via `inset-0 flex flex-col items-center justify-center`. Stage is `h-dvh`
+  // sticky-pinned to viewport top, so stage center == viewport center while
+  // pinned — block sits at screen center as a group.
   //
-  //   Because #post-flyin-stage is sticky at viewport `top-0` once
-  //   #post-flyin-pin hits `top top`, the stage's vertical midpoint IS the
-  //   viewport's vertical midpoint at that moment — so the first line
-  //   lands exactly at screen-center precisely when the scrub ScrollTrigger
-  //   fires and typing begins. Before that point the first line is still
-  //   rising up from below (empty text, no caret), so the typing effect
-  //   only "takes effect" once the first text reaches the center of the
-  //   screen.
+  // Typing trigger still uses the first line's `center center`. With the
+  // block centered, the first line crosses viewport-center while #post-flyin-pin
+  // is approaching `top top` (pre-pin scroll-in), so the scrub timeline begins
+  // slightly before sticky lock and finishes at `bottom bottom` of the pin —
+  // OSScreen handoff timing unchanged.
   return (
     <div
       ref={rootRef}
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 z-20 px-4 text-center"
+      className="pointer-events-none absolute inset-0 z-20 flex flex-col items-center justify-center gap-6 px-4 text-center md:gap-8 lg:gap-10"
     >
-      {/* First line — geometric center pinned to 50% of the stage. */}
-      <div className="absolute inset-x-0 top-1/2 flex -translate-y-1/2 justify-center">
-        {lineElements[0]}
-      </div>
-      {/* Remaining lines — start at 50% of the stage, flow downward. pt-*
-          provides clearance from the first line above (which is centered on
-          the 50% line, so its bottom sits slightly above). */}
-      <div className="absolute inset-x-0 top-1/2 flex flex-col items-center gap-6 pt-10 md:gap-8 md:pt-12 lg:gap-10 lg:pt-16">
-        {lineElements.slice(1)}
-      </div>
+      {lineElements}
     </div>
   );
 }
