@@ -35,7 +35,7 @@ import { useStore } from '@nanostores/react';
 import { useEffect, useRef } from 'react';
 
 const CELL = 16;             // grid cell px — matches cursor sprite size
-const FADE_MS = 1000;        // ms from peak alpha → 0
+const FADE_MS = 400;         // ms from peak alpha → 0
 const ALPHA_MAX = 0.3;       // requirement: 30% opacity peak
 const COLOR = '#a78bfa';     // tailwind violet-400 — D-28 CRT accent
 
