@@ -61,7 +61,7 @@ export default function ProjectDialog({
     >
       <div
         data-os-scrollable
-        className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4 md:p-6"
+        className="flex min-h-0 flex-1 flex-col gap-4 overflow-x-hidden overflow-y-auto p-4 md:p-6"
         aria-describedby={`project-${project.slug}-desc`}
       >
         {hasImages && (
@@ -77,7 +77,7 @@ export default function ProjectDialog({
               href={project.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-pixel text-xs text-purple-400 underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400"
+              className="font-pixel text-xs break-all text-purple-400 underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400"
               aria-label={`Visit ${project.name} (opens in new tab)`}
             >
               {project.url}
